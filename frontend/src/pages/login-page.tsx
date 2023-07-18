@@ -1,11 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Input, Space } from 'antd';
-import { APP_ROTES } from '../common/enums';
+import { APP_ROUTES, UserEvents } from '../common/enums';
+import { SocketContext } from '../context/socket';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const [userName, setUserName] = React.useState('');
+  const socket = React.useContext(SocketContext);
 
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -16,14 +18,15 @@ export const LoginPage: React.FC = () => {
     if (!userName) {
       return;
     }
-    
+
     sessionStorage.setItem('username', userName);
-    navigate(APP_ROTES.DASHDOARD);
+    socket.emit(UserEvents.LOGIN, userName);
+    navigate(APP_ROUTES.DASHDOARD);
   };
 
   React.useEffect(() => {
     const user = sessionStorage.getItem('username');
-    if (user) navigate(APP_ROTES.DASHDOARD);
+    if (user) navigate(APP_ROUTES.DASHDOARD);
   }, [navigate]);
 
   return (

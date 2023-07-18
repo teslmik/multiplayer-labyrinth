@@ -1,0 +1,15 @@
+.roomItem {
+  width: 168px;
+  margin-top: 8px;
+  transition: all 0.2s ease-in-out;
+  border-radius: 4px;
+  padding: 8px 4px !important;
+  width: 100%;
+}
+
+.hover {
+  cursor: pointer;
+  &:hover {
+    background-color: #f7f9f9;
+  }
+}

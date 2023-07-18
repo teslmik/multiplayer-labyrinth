@@ -1,6 +1,7 @@
 import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
+import socketHandler from './socket/index.js';
 
 const PORT = 5001;
 const app = express();
@@ -14,15 +15,7 @@ const io = new Server(server, {
 app.use(express.json());
 app.get('/', (_, res) => res.send('Hello world!'));
 
-io.on('connection', (socket) => {
-  console.log('Новый клиент подключился');
-
-  socket.emit('message', 'Добро пожаловать!');
-
-  socket.on('disconnect', () => {
-    console.log('Клиент отключился');
-  });
-});
+socketHandler(io);
 
 const start = async () => {
   try {
