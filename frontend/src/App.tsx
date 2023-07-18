@@ -3,7 +3,9 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import './App.scss';
 import { APP_ROTES } from './common/enums';
+import { PrivateRoute, PublicRoute } from './components/private-public-routes';
 import { SocketContext } from './context/socket';
+import MainLayout from './layout';
 import { DashboardPage, LoginPage } from './pages';
 
 
@@ -19,10 +21,10 @@ const App: React.FC = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path={APP_ROTES.ROOT} element={<LoginPage />} />
-      </Routes>
-      <Routes>
-        <Route path={APP_ROTES.DASHDOARD} element={<DashboardPage />} />
+        <Route path={APP_ROTES.ROOT} element={<MainLayout />}>
+          <Route path='' element={<PublicRoute><LoginPage /></PublicRoute>} />
+          <Route path={APP_ROTES.DASHDOARD} element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );
