@@ -1,13 +1,13 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
-import './App.scss';
-import { APP_ROTES } from './common/enums';
-import { PrivateRoute, PublicRoute } from './components/private-public-routes';
-import { SocketContext } from './context/socket';
 import MainLayout from './layout';
+import { APP_ROTES } from './common/enums';
+import { PrivateRoute, PublicRoute } from './components/components';
+import { SocketContext } from './context/socket';
 import { DashboardPage, LoginPage } from './pages';
 
+import './App.scss';
 
 const App: React.FC = () => {
   const io = React.useContext(SocketContext);

@@ -13,9 +13,13 @@ export const LoginPage: React.FC = () => {
   };
 
   const handleOnSubmit = () => {
+    if (!userName) {
+      return;
+    }
+    
     sessionStorage.setItem('username', userName);
     navigate(APP_ROTES.DASHDOARD);
-  }
+  };
 
   React.useEffect(() => {
     const user = sessionStorage.getItem('username');
@@ -23,11 +27,17 @@ export const LoginPage: React.FC = () => {
   }, [navigate]);
 
   return (
-    <Space size='large' align='center' style={{ margin: '0 auto' }}>
+    <Space size="large" align="center" style={{ margin: '0 auto' }}>
       <Space.Compact style={{ width: '100%' }}>
-        <Input placeholder='User name' onChange={handleOnChange} />
-        <Button type="primary" onClick={handleOnSubmit}>Submit</Button>
+        <Input
+          placeholder="User name"
+          onChange={handleOnChange}
+          onPressEnter={handleOnSubmit}
+        />
+        <Button type="primary" onClick={handleOnSubmit}>
+          Submit
+        </Button>
       </Space.Compact>
     </Space>
-  )
-}
+  );
+};

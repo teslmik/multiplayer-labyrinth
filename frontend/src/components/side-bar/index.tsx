@@ -9,8 +9,11 @@ export const SideBar: React.FC = () => {
   } = theme.useToken();
 
   return (
-    <Layout.Sider className={styles.sideBar} style={{ background: colorBgContainer }}>
-      <Button size='large'>New game</Button>
+    <Layout.Sider style={{ background: colorBgContainer }}>
+      <div className={styles.sideBar}>
+        <p>Join game or create new</p>
+        <Button type='primary' size='large'>New game</Button>
+      </div>
     </Layout.Sider>
   )
 };
