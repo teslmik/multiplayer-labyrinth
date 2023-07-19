@@ -8,7 +8,6 @@ const MainLayout: React.FC = () => {
   const { pathname } = useLocation();
 
   const user = sessionStorage.getItem('username');
-
   const isAuth = pathname === APP_ROUTES.ROOT || !user;
 
   return (
