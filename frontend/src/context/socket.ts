@@ -2,7 +2,7 @@ import React from 'react';
 import type { Socket } from 'socket.io-client';
 import io from 'socket.io-client';
 
-import { SOCKET_URL } from '../common/constants';
+import { SOCKET_URL } from '../constants';
 
 const username = sessionStorage.getItem('username');
 

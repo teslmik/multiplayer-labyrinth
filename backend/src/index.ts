@@ -1,3 +1,4 @@
+import cors from 'cors';
 import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
@@ -5,10 +6,14 @@ import socketHandler from './socket/index.js';
 
 const PORT = 5001;
 const app = express();
+
+app.use(cors());
+
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: '*'
+    origin: '*',
+    methods: ["GET", "POST"]
   }
 });
 

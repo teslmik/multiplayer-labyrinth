@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import MainLayout from './layout';
-import { APP_ROUTES } from './common/enums';
+import { APP_ROUTES } from './enums';
 import { PrivateRoute, PublicRoute } from './components/components';
 import { DashboardPage, GamePage, LoginPage } from './pages';
 

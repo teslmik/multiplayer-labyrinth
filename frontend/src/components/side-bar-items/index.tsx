@@ -1,6 +1,6 @@
 import { Avatar, List } from 'antd';
 import React from 'react';
-import { RoomType } from '../../common/types/room.type';
+import { RoomType } from '../../types/room.type';
 
 import styles from './styles.module.scss';
 

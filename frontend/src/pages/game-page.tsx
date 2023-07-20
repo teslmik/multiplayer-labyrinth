@@ -1,6 +1,6 @@
 import React from 'react';
-import { RoomEvents } from '../common/enums';
-import { RoomType } from '../common/types/types';
+import { RoomEvents } from '../enums';
+import { RoomType } from '../types/types';
 import { Room } from '../components/components';
 import { SocketContext } from '../context/socket';
 

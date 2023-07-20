@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { APP_ROUTES } from '../../common/enums';
+import { APP_ROUTES } from '../../enums';
 
 export const PublicRoute: React.FC<{ children: React.ReactElement }> = ({ children }) => {
   const isAuthenticated = sessionStorage.getItem('username') !== null;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Input, Space } from 'antd';
-import { APP_ROUTES, UserEvents } from '../common/enums';
+import { APP_ROUTES, UserEvents } from '../enums';
 import { SocketContext } from '../context/socket';
 // import { ModalError } from '../components/components';
 

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Layout } from 'antd';
 
 import styles from './styles.module.scss';
-import { APP_ROUTES, SocketEvents } from '../../common/enums';
+import { APP_ROUTES, SocketEvents } from '../../enums';
 import { SocketContext } from '../../context/socket';
 
 type Properties = {

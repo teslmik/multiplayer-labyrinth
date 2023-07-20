@@ -1,8 +1,8 @@
 import { Button, Input, Layout, List, Modal, theme } from 'antd';
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { APP_ROUTES, RoomEvents } from '../../common/enums';
-import { RoomType } from '../../common/types/room.type';
+import { APP_ROUTES, RoomEvents } from '../../enums';
+import { RoomType } from '../../types/room.type';
 import { SocketContext } from '../../context/socket';
 import { SideBarItems } from '../components';
 

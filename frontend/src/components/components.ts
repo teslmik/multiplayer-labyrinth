@@ -5,3 +5,4 @@ export { Room } from './room';
 export { SideBar } from './side-bar';
 export { SideBarItems } from './side-bar-items';
 export { ModalError } from './modal-error';
+export { Maze } from './maze';
