@@ -3,7 +3,6 @@ import { RoomEvents } from '../enums/room-events.enum.js';
 import { SocketEvents } from '../enums/socket-events.enum.js';
 import { UserEvents } from '../enums/user-events.enum.js';
 import { RoomType, UserType } from '../types/types.js';
-// import * as config from './config.js';
 
 const users: UserType[] = [];
 const rooms: RoomType[] = [];

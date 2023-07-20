@@ -3,26 +3,26 @@ import { CellPosType } from "../types/types";
 export const generateMaze = (MAZE_SIZE: number) => {
   const createMatrix = (size: number) => {
     const matrix = [];
-    
+
     for (let y = 0; y < size; y++) {
       const row = [];
-      
+
       for (let x = 0; x < size; x++) {
         row.push(false);
       }
-      
+
       matrix.push(row);
     }
-    
+
     return matrix;
   }
-  
+
   const getRandomItem = <T>(array: Array<T>) => {
     const index = Math.floor(Math.random() * array.length);
     return array[index];
   }
 
-  const moveTractor = (tractor: CellPosType) =>  {
+  const moveTractor = (tractor: CellPosType) => {
     const directions = [];
 
     if (tractor.x > 0) {
@@ -40,18 +40,18 @@ export const generateMaze = (MAZE_SIZE: number) => {
     if (tractor.y < MAZE_SIZE - 1) {
       directions.push([0, 2]);
     }
-    
+
     const [dx, dy] = getRandomItem(directions);
-    
+
     tractor.x += dx;
     tractor.y += dy;
-    
+
     if (!matrix[tractor.y][tractor.x]) {
       matrix[tractor.y][tractor.x] = true;
       matrix[tractor.y - dy / 2][tractor.x - dx / 2] = true;
     }
   }
-  
+
   const isValidMaze = <T>(matrix: Array<T>[]) => {
     for (let y = 0; y < MAZE_SIZE; y += 2) {
       for (let x = 0; x < MAZE_SIZE; x += 2) {
@@ -60,7 +60,7 @@ export const generateMaze = (MAZE_SIZE: number) => {
         }
       }
     }
-    
+
     return true;
   }
 
@@ -71,6 +71,6 @@ export const generateMaze = (MAZE_SIZE: number) => {
   while (!isValidMaze(matrix)) {
     moveTractor(tractor);
   }
-  
+
   return matrix;
 };

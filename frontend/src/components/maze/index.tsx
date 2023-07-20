@@ -115,9 +115,9 @@ export const Maze: React.FC = () => {
       if (ctx) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        drawCanvas(ctx, canvasDataRef); // Draw white canvas
-        drawVisitedCells(ctx, visitedCells); // Draw visited cells
-        drawRedSquare(ctx, redSquarePos); // Draw red square
+        drawCanvas(ctx, canvasDataRef);
+        drawVisitedCells(ctx, visitedCells);
+        drawRedSquare(ctx, redSquarePos);
       }
     }
   }, [redSquarePos, visitedCells]);
