@@ -1,7 +1,10 @@
+import { CellPosType } from "./types";
+
 export type UserType = {
   id: string;
   name: string;
-  ready: boolean;
-  progress: number;
+  canMove: boolean;
+  startPoint: CellPosType | null;
+  finishPoint: CellPosType | null | undefined;
   finishedAt: number | null;
 }

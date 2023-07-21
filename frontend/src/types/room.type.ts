@@ -5,4 +5,6 @@ export type RoomType = {
   name: string;
   players: UserType[];
   isGameStarted: boolean;
+  maze: boolean[][] | null;
+  history: string[];
 }

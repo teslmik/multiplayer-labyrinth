@@ -3,15 +3,17 @@ import { CellPosType } from '../types/types';
 
 export const drawRedSquare = (
   ctx: CanvasRenderingContext2D,
-  position: CellPosType,
+  position: CellPosType = { x: 0, y: 0 },
 ) => {
-  ctx.fillStyle = 'red';
-  ctx.fillRect(
-    position.x * config.CELL_SIZE +
-    (config.CELL_SIZE - config.RED_SQUARE_SIZE) / 2,
-    position.y * config.CELL_SIZE +
-    (config.CELL_SIZE - config.RED_SQUARE_SIZE) / 2,
-    config.RED_SQUARE_SIZE,
-    config.RED_SQUARE_SIZE,
-  );
+  if (position) {
+    ctx.fillStyle = 'red';
+    ctx.fillRect(
+      position.x * config.CELL_SIZE +
+      (config.CELL_SIZE - config.RED_SQUARE_SIZE) / 2,
+      position.y * config.CELL_SIZE +
+      (config.CELL_SIZE - config.RED_SQUARE_SIZE) / 2,
+      config.RED_SQUARE_SIZE,
+      config.RED_SQUARE_SIZE,
+    );
+  }
 };

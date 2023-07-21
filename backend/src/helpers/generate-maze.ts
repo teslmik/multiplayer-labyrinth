@@ -1,4 +1,4 @@
-import { CellPosType } from "../types/types";
+import { CellPosType } from "../types/types.js";
 
 export const generateMaze = (MAZE_SIZE: number) => {
   const createMatrix = (size: number) => {

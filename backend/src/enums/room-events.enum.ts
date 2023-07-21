@@ -5,4 +5,6 @@ export enum RoomEvents {
   OPEN = 'room:open',
   JOIN = 'room:join',
   EXIT = 'room:exit',
+  FULL = 'room:full',
+  MESSAGE = 'room:message'
 }

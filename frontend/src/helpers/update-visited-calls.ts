@@ -1,11 +1,13 @@
 export const updateVisitedCells = (
-  i: number,
-  j: number,
+  i: number | undefined,
+  j: number | undefined,
   setState: React.Dispatch<React.SetStateAction<boolean[][]>>,
 ) => {
-  setState((prevVisitedCells) => {
-    const newVisitedCells = [...prevVisitedCells];
-    newVisitedCells[i][j] = true;
-    return newVisitedCells;
-  });
+  if (i !== undefined && j !== undefined) {
+    setState((prevVisitedCells) => {
+      const newVisitedCells = [...prevVisitedCells];
+      newVisitedCells[i][j] = true;
+      return newVisitedCells;
+    });
+  }
 };

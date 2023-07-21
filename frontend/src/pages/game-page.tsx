@@ -1,26 +1,49 @@
 import React from 'react';
-import { RoomEvents } from '../enums';
-import { RoomType } from '../types/types';
+import { GameEvents, RoomEvents } from '../enums';
+import { CellPosType, RoomInfoType, UserType } from '../types/types';
 import { Room, RoomTimer } from '../components/components';
 import { SocketContext } from '../context/socket';
-import { useLocation } from 'react-router-dom';
+import * as config from '../components/maze/config';
 
 export const GamePage: React.FC = () => {
-  const { pathname } = useLocation();
   const socket = React.useContext(SocketContext);
-  const [rooms, setRooms] = React.useState<RoomType[]>([]);
-  const [currentRoom, setCurrentRoom] = React.useState<RoomType | undefined>();
+  const [currentRoom, setCurrentRoom] = React.useState<
+    RoomInfoType | undefined
+  >();
+  const [maze, setMaze] = React.useState<boolean[][]>([[]]);
+
+  const userName = sessionStorage.getItem('username');
+
+  const handleNextStep = () => {
+    if (currentRoom?.isGameStarted) socket.emit(GameEvents.STEP, currentRoom);
+  };
+
+  const handleGetWinner = (squerPosition: CellPosType, user: UserType) =>
+    socket.emit(GameEvents.END, currentRoom, user, squerPosition);
+
+  const roomProps = {
+    room: currentRoom,
+    maze,
+    userName,
+    handleNextStep,
+    handleGetWinner,
+  };
 
   React.useEffect(() => {
-    socket.on(RoomEvents.UPDATE, (rooms: RoomType[]) => setRooms(rooms));
-    const room = rooms.find((room) => room.id === pathname.split('/')[3]);
-    if (room) setCurrentRoom(room);
-  }, [pathname, rooms, socket]);
+    socket.on(RoomEvents.OPEN, (room) => setCurrentRoom(room));
+    socket.on(GameEvents.STARTED, (maze: boolean[][]) => setMaze(maze));
+  }, [socket]);
+
+  React.useEffect(() => {
+    if (currentRoom?.players?.length === 2) {
+      socket.emit(RoomEvents.FULL, currentRoom, config.MAZE_SIZE);
+    }
+  }, [currentRoom, socket]);
 
   return (
     <>
-      {currentRoom && currentRoom.players.length === 2 ? (
-        <Room room={currentRoom} />
+      {currentRoom && currentRoom.players?.length === 2 ? (
+        <Room {...roomProps} />
       ) : (
         <RoomTimer />
       )}

@@ -1,10 +1,11 @@
-import { Button, Input, Layout, List, Modal, theme } from 'antd';
 import React from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import { Input, Layout, Modal, theme } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { APP_ROUTES, RoomEvents } from '../../enums';
-import { RoomType } from '../../types/room.type';
+import { APP_ROUTES, RoomEvents, UserEvents } from '../../enums';
 import { SocketContext } from '../../context/socket';
-import { SideBarItems } from '../components';
+import { GameSidePanelItems, WaitingList } from './components/components';
+import { RoomType, UserType } from '../../types/types';
 
 import styles from './styles.module.scss';
 
@@ -12,12 +13,13 @@ export const SideBar: React.FC = () => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const socket = React.useContext(SocketContext);
-  const [rooms, setRooms] = React.useState<RoomType[]>([]);
+  const [rooms, setRooms] = React.useState<Omit<RoomType, 'maze'>[]>([]);
+  const [users, setUsers] = React.useState<UserType[]>([]);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [roomName, setRoomName] = React.useState('');
-  const [selectedRoom, setSelectedRoom] = React.useState<RoomType | undefined>(
-    undefined,
-  );
+  const [selectedRoom, setSelectedRoom] = React.useState<
+    Omit<RoomType, 'maze'> | undefined
+  >(undefined);
 
   const userName = sessionStorage.getItem('username');
 
@@ -35,11 +37,9 @@ export const SideBar: React.FC = () => {
       return;
     }
 
-    const { id: roomId } = socket.emit(
-      RoomEvents.CREATE,
-      { id: socket.id, name: roomName },
-      userName,
-    );
+    const roomId = uuidv4();
+
+    socket.emit(RoomEvents.CREATE, { id: roomId, name: roomName }, userName);
 
     navigate(`game/${roomId}`);
     setIsModalOpen(false);
@@ -52,9 +52,7 @@ export const SideBar: React.FC = () => {
     setSelectedRoom(undefined);
   };
 
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
+  const showModal = () => setIsModalOpen(true);
 
   const handleCancel = () => {
     setIsModalOpen(false);
@@ -67,7 +65,6 @@ export const SideBar: React.FC = () => {
     navigate(`game/${selectedRoomId}`);
   };
 
-
   React.useEffect(() => {
     const currentRoom = rooms.find(
       (room) => room.id === pathname.split('/')[3],
@@ -75,16 +72,19 @@ export const SideBar: React.FC = () => {
 
     if (currentRoom) setSelectedRoom(currentRoom);
 
+    const handleUpdateUsers = (users: UserType[]) => setUsers(users);
     const handleOpenRoom = (room: RoomType) => setSelectedRoom(room);
-    const handleUpdateRooms = (updatedRooms: RoomType[]) =>
-      setRooms(updatedRooms);
+    const handleUpdateRooms = (updRooms: Omit<RoomType, 'maze'>[]) =>
+      setRooms(updRooms);
 
     socket.on(RoomEvents.OPEN, handleOpenRoom);
     socket.on(RoomEvents.UPDATE, handleUpdateRooms);
+    socket.on(UserEvents.UPDATE, handleUpdateUsers);
 
     return () => {
       socket.off(RoomEvents.OPEN, handleOpenRoom);
       socket.off(RoomEvents.UPDATE, handleUpdateRooms);
+      socket.off(UserEvents.UPDATE, handleUpdateUsers);
     };
   }, [pathname, rooms, socket]);
 
@@ -92,36 +92,16 @@ export const SideBar: React.FC = () => {
     <Layout.Sider style={{ background: colorBgContainer, maxWidth: '300px' }}>
       <div className={styles.sideBar}>
         {pathname === `${APP_ROUTES.DASHDOARD}` ? (
-          <>
-            <Button type="primary" size="large" onClick={showModal}>
-              New game
-            </Button>
-            <List
-              style={{ width: '100%' }}
-              bordered
-              dataSource={rooms}
-              renderItem={(item, index) => (
-                <SideBarItems
-                  room={item}
-                  index={index}
-                  handleJoinRoom={handleJoinRoom}
-                />
-              )}
-            />
-          </>
+          <WaitingList
+            showModal={showModal}
+            rooms={rooms}
+            handleJoinRoom={handleJoinRoom}
+          />
         ) : (
-          <>
-            <Button type="primary" size="large" onClick={handleBack}>
-              Give up
-            </Button>
-            <div>
-              <ul>
-                {selectedRoom?.players.map((player) => (
-                  <li key={player.id}>{player.name}</li>
-                ))}
-              </ul>
-            </div>
-          </>
+          <GameSidePanelItems
+            handleBack={handleBack}
+            selectedRoom={selectedRoom}
+          />
         )}
       </div>
       <Modal
