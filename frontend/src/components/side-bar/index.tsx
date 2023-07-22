@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { APP_ROUTES, RoomEvents, UserEvents } from '../../enums';
 import { SocketContext } from '../../context/socket';
 import { GameSidePanelItems, WaitingList } from './components/components';
-import { RoomType, UserType } from '../../types/types';
+import { RoomInfoType, UserType } from '../../types/types';
 
 import styles from './styles.module.scss';
 
@@ -13,12 +13,12 @@ export const SideBar: React.FC = () => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const socket = React.useContext(SocketContext);
-  const [rooms, setRooms] = React.useState<Omit<RoomType, 'maze'>[]>([]);
-  const [users, setUsers] = React.useState<UserType[]>([]);
+  const [rooms, setRooms] = React.useState<RoomInfoType[]>([]);
+  const [users, setUsers] = React.useState<UserType[]>([]); // ------todo delete
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [roomName, setRoomName] = React.useState('');
   const [selectedRoom, setSelectedRoom] = React.useState<
-    Omit<RoomType, 'maze'> | undefined
+    RoomInfoType | undefined
   >(undefined);
 
   const userName = sessionStorage.getItem('username');
@@ -61,7 +61,7 @@ export const SideBar: React.FC = () => {
 
   const handleJoinRoom = (selectedRoomId: string) => {
     socket.emit(RoomEvents.JOIN, selectedRoomId, userName);
-    socket.on(RoomEvents.OPEN, (room: RoomType) => setSelectedRoom(room));
+    socket.on(RoomEvents.OPEN, (room: RoomInfoType) => setSelectedRoom(room));
     navigate(`game/${selectedRoomId}`);
   };
 
@@ -72,24 +72,24 @@ export const SideBar: React.FC = () => {
 
     if (currentRoom) setSelectedRoom(currentRoom);
 
-    const handleUpdateUsers = (users: UserType[]) => setUsers(users);
-    const handleOpenRoom = (room: RoomType) => setSelectedRoom(room);
-    const handleUpdateRooms = (updRooms: Omit<RoomType, 'maze'>[]) =>
+    const handleUpdateUsers = (users: UserType[]) => setUsers(users); // ------todo delete
+    const handleOpenRoom = (room: RoomInfoType) => setSelectedRoom(room);
+    const handleUpdateRooms = (updRooms: RoomInfoType[]) =>
       setRooms(updRooms);
 
     socket.on(RoomEvents.OPEN, handleOpenRoom);
     socket.on(RoomEvents.UPDATE, handleUpdateRooms);
-    socket.on(UserEvents.UPDATE, handleUpdateUsers);
+    socket.on(UserEvents.UPDATE, handleUpdateUsers); // ------todo delete
 
     return () => {
       socket.off(RoomEvents.OPEN, handleOpenRoom);
       socket.off(RoomEvents.UPDATE, handleUpdateRooms);
-      socket.off(UserEvents.UPDATE, handleUpdateUsers);
+      socket.off(UserEvents.UPDATE, handleUpdateUsers); // ------todo delete
     };
   }, [pathname, rooms]);
 
   return (
-    <Layout.Sider style={{ background: colorBgContainer, maxWidth: '300px' }}>
+    <Layout.Sider width={250} style={{ background: colorBgContainer }}>
       <div className={styles.sideBar}>
         {pathname === `${APP_ROUTES.DASHDOARD}` ? (
           <WaitingList
@@ -100,7 +100,8 @@ export const SideBar: React.FC = () => {
         ) : (
           <GameSidePanelItems
             handleBack={handleBack}
-            selectedRoom={selectedRoom}
+              selectedRoom={selectedRoom}
+              userName={userName}
           />
         )}
       </div>

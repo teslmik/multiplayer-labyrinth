@@ -8,6 +8,7 @@ import {
   generateFinishPoint,
   generateMaze,
   generateStartPoints,
+  getCurrentTime,
   removeMazeFromRoom,
 } from '../helpers/helpers.js';
 import {
@@ -67,7 +68,7 @@ export default (io: Server) => {
             isGameStarted: false,
             isGameEnd: false,
             maze: null,
-            history: [''],
+            history: [],
           };
           rooms.push(findRoom);
 
@@ -89,7 +90,10 @@ export default (io: Server) => {
       }
 
       socket.join(selectedRoomId);
-      io.to(selectedRoomId).emit(RoomEvents.OPEN, removeMazeFromRoom(rooms)[findRoomIndex]);
+      io.to(selectedRoomId).emit(
+        RoomEvents.OPEN,
+        removeMazeFromRoom(rooms)[findRoomIndex],
+      );
       io.sockets.emit(RoomEvents.UPDATE, removeMazeFromRoom(rooms));
     });
 
@@ -137,7 +141,10 @@ export default (io: Server) => {
         });
 
         io.to(currentRoom.id).emit(GameEvents.STARTED, maze);
-        io.to(currentRoom.id).emit(RoomEvents.OPEN, removeMazeFromRoom(rooms)[index]);
+        io.to(currentRoom.id).emit(
+          RoomEvents.OPEN,
+          removeMazeFromRoom(rooms)[index],
+        );
         io.sockets.emit(RoomEvents.UPDATE, removeMazeFromRoom(rooms));
       }
     });
@@ -153,7 +160,6 @@ export default (io: Server) => {
       };
 
       io.to(room.id).emit(RoomEvents.OPEN, updRoom);
-      io.sockets.emit(RoomEvents.UPDATE, removeMazeFromRoom(rooms));
     });
 
     socket.on(
@@ -167,14 +173,36 @@ export default (io: Server) => {
             player?.finishPoint?.y === position?.y,
         );
 
-        rooms[roomIndex].players.forEach(player => player.canMove = false);
-        rooms[roomIndex].players.forEach(player => player.finishedAt = new Date());
+        rooms[roomIndex].players.forEach((player) => (player.canMove = false));
+        rooms[roomIndex].players.forEach(
+          (player) => (player.finishedAt = new Date()),
+        );
         rooms[roomIndex].isGameStarted = false;
         rooms[roomIndex].isGameEnd = true;
 
         io.to(currentRoom.id).emit(RoomEvents.MESSAGE, winner);
-        io.to(currentRoom.id).emit(RoomEvents.OPEN, removeMazeFromRoom(rooms)[roomIndex]);
+        io.to(currentRoom.id).emit(
+          RoomEvents.OPEN,
+          removeMazeFromRoom(rooms)[roomIndex],
+        );
         io.sockets.emit(RoomEvents.UPDATE, removeMazeFromRoom(rooms));
+      },
+    );
+
+    socket.on(
+      RoomEvents.HISTORY,
+      (text: string, id: string, playerName: string | null) => {
+        const index = rooms.findIndex((room) => room.id === id);
+
+        if (index !== -1 && playerName) {
+          rooms[index].history.push({
+            time: getCurrentTime(),
+            playerName,
+            text,
+          });
+
+          io.to(id).emit(RoomEvents.OPEN, removeMazeFromRoom(rooms)[index]);
+        }
       },
     );
 

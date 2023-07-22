@@ -6,5 +6,6 @@ export enum RoomEvents {
   JOIN = 'room:join',
   EXIT = 'room:exit',
   FULL = 'room:full',
-  MESSAGE = 'room:message'
+  MESSAGE = 'room:message',
+  HISTORY = 'room:history',
 }

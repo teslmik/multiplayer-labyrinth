@@ -1,10 +1,10 @@
-import { UserType } from "./user.type.js";
+import { HistoryType, UserType } from "./types.js";
 
 export type RoomInfoType = {
   id: string;
   name: string;
   players: UserType[];
   isGameStarted: boolean;
-  history: string[];
+  history: HistoryType[];
   isGameEnd: boolean;
 }

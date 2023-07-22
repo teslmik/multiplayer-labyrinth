@@ -1,11 +1,11 @@
 import { Avatar, List } from 'antd';
 import React from 'react';
-import { RoomType } from '../../../../types/room.type';
+import { RoomInfoType } from '../../../../types/types';
 
 import styles from './styles.module.scss';
 
 type Properties = {
-  room: Omit<RoomType, 'maze'>;
+  room: RoomInfoType;
   index: number;
   handleJoinRoom: (roomId: string) => void;
 };

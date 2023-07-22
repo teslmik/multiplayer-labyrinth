@@ -1,4 +1,4 @@
-import { UserType } from "./user.type.js";
+import { HistoryType, UserType } from "./types.js";
 
 export type RoomType = {
   id: string;
@@ -6,6 +6,6 @@ export type RoomType = {
   players: UserType[];
   isGameStarted: boolean;
   maze: boolean[][] | null;
-  history: string[];
+  history: HistoryType[];
   isGameEnd: boolean;
-}
+};

@@ -1,11 +1,11 @@
 import { Button, List } from 'antd';
 import React from 'react';
-import { RoomType } from '../../../../types/room.type';
+import { RoomInfoType } from '../../../../types/types';
 import { SideBarItems } from '../components';
 
 type Properties = {
   showModal: () => void;
-  rooms: Omit<RoomType, 'maze'>[];
+  rooms: RoomInfoType[];
   handleJoinRoom: (id: string) => void;
 }
 
