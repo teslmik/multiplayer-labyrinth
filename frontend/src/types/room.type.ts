@@ -7,4 +7,5 @@ export type RoomType = {
   isGameStarted: boolean;
   maze: boolean[][] | null;
   history: string[];
+  isGameEnd: boolean;
 }

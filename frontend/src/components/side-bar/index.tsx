@@ -86,7 +86,7 @@ export const SideBar: React.FC = () => {
       socket.off(RoomEvents.UPDATE, handleUpdateRooms);
       socket.off(UserEvents.UPDATE, handleUpdateUsers);
     };
-  }, [pathname, rooms, socket]);
+  }, [pathname, rooms]);
 
   return (
     <Layout.Sider style={{ background: colorBgContainer, maxWidth: '300px' }}>

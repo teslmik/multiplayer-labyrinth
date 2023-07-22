@@ -15,7 +15,7 @@ type Properties = {
   maze: boolean[][];
   player: UserType | undefined;
   handleNextStep: () => void;
-  handleGetWinner: (squerPosition: CellPosType, player: UserType) => void;
+  handleGetWinner: (squerPosition: CellPosType) => void;
 };
 
 export const Maze: React.FC<Properties> = ({
@@ -106,14 +106,15 @@ export const Maze: React.FC<Properties> = ({
       setRedSquarePos(player.startPoint);
 
     if (
-      player &&
-      redSquarePos.x === player.finishPoint?.x &&
+      redSquarePos &&
+      !player?.finishedAt &&
+      redSquarePos.x === player?.finishPoint?.x &&
       redSquarePos.y === player.finishPoint?.y
     ) {
-      handleGetWinner(redSquarePos, player);
       console.log('Игра завершена!');
+      handleGetWinner(redSquarePos);
     }
-  }, [handleGetWinner, player, redSquarePos]);
+  }, [player, redSquarePos]);
 
   React.useEffect(() => {
     if (featureStep) {
@@ -124,7 +125,7 @@ export const Maze: React.FC<Properties> = ({
   React.useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
 
-    updateVisitedCells(redSquarePos.y, redSquarePos.x, setVisitedCells);
+    updateVisitedCells(redSquarePos?.y, redSquarePos?.x, setVisitedCells);
     writeHistory();
 
     return () => {

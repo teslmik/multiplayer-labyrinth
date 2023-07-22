@@ -1,9 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Input, Space } from 'antd';
-import { APP_ROUTES, UserEvents } from '../enums';
+import { APP_ROUTES, UserEvents, ModalType } from '../enums';
 import { SocketContext } from '../context/socket';
-// import { ModalError } from '../components/components';
+import { ModalApp } from '../components/components';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -11,7 +11,7 @@ export const LoginPage: React.FC = () => {
   const socket = React.useContext(SocketContext);
 
   // const userExist = () => {
-  //   ModalError('User exist', 'User with the same name already exists, please try again');
+  //   ModalApp('User exist', 'User with the same name already exists, please try again', ModalType.WARNING);
   //   sessionStorage.clear();
   //   navigate(APP_ROUTES.ROOT);
   // };

@@ -6,4 +6,5 @@ export type RoomInfoType = {
   players: UserType[];
   isGameStarted: boolean;
   history: string[];
+  isGameEnd: boolean;
 }

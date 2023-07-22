@@ -65,6 +65,7 @@ export default (io: Server) => {
             name: currentRoom.name,
             players: [findUser],
             isGameStarted: false,
+            isGameEnd: false,
             maze: null,
             history: [''],
           };
@@ -88,7 +89,7 @@ export default (io: Server) => {
       }
 
       socket.join(selectedRoomId);
-      io.to(selectedRoomId).emit(RoomEvents.OPEN, rooms[findRoomIndex]);
+      io.to(selectedRoomId).emit(RoomEvents.OPEN, removeMazeFromRoom(rooms)[findRoomIndex]);
       io.sockets.emit(RoomEvents.UPDATE, removeMazeFromRoom(rooms));
     });
 
@@ -96,6 +97,7 @@ export default (io: Server) => {
       const findRoomIndex = rooms.findIndex((room) => room.id === roomId);
 
       if (findRoomIndex !== -1) {
+        rooms[findRoomIndex].isGameStarted = false;
         rooms[findRoomIndex].players.forEach(
           (player) => (player.canMove = false),
         );
@@ -134,21 +136,15 @@ export default (io: Server) => {
           player.finishPoint = finishPosition;
         });
 
-        const roomInfo = {
-          players: rooms[index].players,
-          id: rooms[index].id,
-          name: rooms[index].name,
-        };
-
         io.to(currentRoom.id).emit(GameEvents.STARTED, maze);
-        io.to(currentRoom.id).emit(RoomEvents.OPEN, roomInfo);
+        io.to(currentRoom.id).emit(RoomEvents.OPEN, removeMazeFromRoom(rooms)[index]);
         io.sockets.emit(RoomEvents.UPDATE, removeMazeFromRoom(rooms));
       }
     });
 
     socket.on(GameEvents.STEP, (room: RoomInfoType) => {
       const { players, ...restRoom } = room;
-      const updRoom = {
+      const updRoom: RoomInfoType = {
         ...restRoom,
         players: players.map((player) => ({
           ...player,
@@ -162,23 +158,23 @@ export default (io: Server) => {
 
     socket.on(
       GameEvents.END,
-      (currentRoom: RoomInfoType, player: UserType, position: CellPosType) => {
+      (currentRoom: RoomInfoType, position: CellPosType) => {
         const roomIndex = rooms.findIndex((room) => room.id === currentRoom.id);
-        // const playerIndex = currentRoom.players.findIndex(
-        //   (_player) => _player.id === player.id,
-        // );
+
         const winner = currentRoom.players.find(
           (player) =>
-            player?.finishPoint?.x === position.x &&
-            player.finishPoint.y === position.y,
+            player?.finishPoint?.x === position?.x &&
+            player?.finishPoint?.y === position?.y,
         );
 
         rooms[roomIndex].players.forEach(player => player.canMove = false);
         rooms[roomIndex].players.forEach(player => player.finishedAt = new Date());
         rooms[roomIndex].isGameStarted = false;
+        rooms[roomIndex].isGameEnd = true;
 
         io.to(currentRoom.id).emit(RoomEvents.MESSAGE, winner);
-        io.to(currentRoom.id).emit(RoomEvents.OPEN, rooms[roomIndex]);
+        io.to(currentRoom.id).emit(RoomEvents.OPEN, removeMazeFromRoom(rooms)[roomIndex]);
+        io.sockets.emit(RoomEvents.UPDATE, removeMazeFromRoom(rooms));
       },
     );
 

@@ -1,15 +1,18 @@
 import * as config from '../components/maze/config';
 
 export const isValidCell = (
-  row = 0,
-  col = 0,
+  row: number,
+  col: number,
   maze: boolean[][],
 ): boolean => {
-    return (
-      row >= 0 &&
-      row < config.MAZE_SIZE &&
-      col >= 0 &&
-      col < config.MAZE_SIZE &&
-      maze[row][col]
-    );
+  console.log('maze: ', maze);
+  return (
+    row !== undefined &&
+    col !== undefined &&
+    row >= 0 &&
+    row < config.MAZE_SIZE &&
+    col >= 0 &&
+    col < config.MAZE_SIZE &&
+    maze[row][col]
+  );
 };
