@@ -10,7 +10,6 @@ type Properties = {
 }
 
 export const WaitingList: React.FC<Properties> = ({ showModal, rooms, handleJoinRoom }) => {
-  console.log(rooms.filter(room => !room.isGameStarted && !room.isGameEnd));
   return (
     <>
       <Button type="primary" size="large" onClick={showModal}>

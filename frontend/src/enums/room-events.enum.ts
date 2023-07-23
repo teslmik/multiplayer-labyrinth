@@ -8,4 +8,5 @@ export enum RoomEvents {
   FULL = 'room:full',
   MESSAGE = 'room:message',
   HISTORY = 'room:history',
+  SEND_HISTORY = 'room:sendHistory'
 }

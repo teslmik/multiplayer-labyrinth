@@ -20,6 +20,7 @@ import {
 
 const users: UserType[] = [];
 const rooms: RoomType[] = [];
+console.log('rooms: ', rooms);
 
 export default (io: Server) => {
   io.on(SocketEvents.CONNECTION, (socket) => {
@@ -149,17 +150,18 @@ export default (io: Server) => {
       }
     });
 
-    socket.on(GameEvents.STEP, (room: RoomInfoType) => {
-      const { players, ...restRoom } = room;
-      const updRoom: RoomInfoType = {
-        ...restRoom,
-        players: players.map((player) => ({
-          ...player,
-          canMove: !player.canMove,
-        })),
-      };
+    socket.on(GameEvents.STEP, (currentRoom: RoomInfoType) => {
+      const index = rooms.findIndex((room) => room.id === currentRoom.id);
 
-      io.to(room.id).emit(RoomEvents.OPEN, updRoom);
+      rooms[index].players = currentRoom.players.map((player) => ({
+        ...player,
+        canMove: !player.canMove,
+      }));
+
+      io.to(currentRoom.id).emit(
+        RoomEvents.OPEN,
+        removeMazeFromRoom(rooms)[index],
+      );
     });
 
     socket.on(
@@ -201,7 +203,13 @@ export default (io: Server) => {
             text,
           });
 
+          const lastHistoryItem = rooms[index].history.slice(-1)[0];
+
           io.to(id).emit(RoomEvents.OPEN, removeMazeFromRoom(rooms)[index]);
+          
+          if (rooms[index].players.find(player => player.name === playerName)?.canMove) {
+            io.to(id).emit(RoomEvents.SEND_HISTORY, lastHistoryItem);
+          }
         }
       },
     );

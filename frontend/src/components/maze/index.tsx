@@ -1,4 +1,8 @@
 import React from 'react';
+import { useParams } from 'react-router-dom';
+import { DIRECTIONS } from '../../constants';
+import { SocketContext } from '../../context/socket';
+import { RoomEvents } from '../../enums';
 import {
   drawCanvas,
   drawFinishFlag,
@@ -8,7 +12,7 @@ import {
   isValidCell,
   updateVisitedCells,
 } from '../../helpers/helpers';
-import { CellPosType, UserType } from '../../types/types';
+import { CellPosType, HistoryType, UserType } from '../../types/types';
 import * as config from './config';
 
 type Properties = {
@@ -24,6 +28,8 @@ export const Maze: React.FC<Properties> = ({
   handleNextStep,
   handleGetWinner,
 }) => {
+  const { id } = useParams();
+  const socket = React.useContext(SocketContext);
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const directionRef = React.useRef<string>('');
   const canvasDataRef = React.useRef<boolean[][]>(
@@ -73,7 +79,7 @@ export const Maze: React.FC<Properties> = ({
     }
   }, [maze, redSquarePos]);
 
-  const writeHistory = React.useCallback(() => {
+  const getFeatureStep = React.useCallback(() => {
     if (keyPrressCount) {
       if (directionRef.current === 'up') {
         setFeatureStep({ x: redSquarePos?.x, y: redSquarePos?.y - 1 });
@@ -96,10 +102,34 @@ export const Maze: React.FC<Properties> = ({
         setKeyPrressCount((prev) => prev + 1);
         moveRedSquare();
         handleNextStep();
+        
+        socket.emit(RoomEvents.HISTORY, `/${directionRef.current}`, id, player.name);
       }
     },
     [handleNextStep, moveRedSquare, player?.canMove],
   );
+
+  const handleChatMessage = React.useCallback((historyItem: HistoryType) => {
+    type PrefixType = "up" | "down" | "left" | "right";
+
+    const { text, playerName } = historyItem;
+    const direction = text.trim().replace('/', '') as PrefixType;
+
+    if (DIRECTIONS['/'].includes(direction) && player?.name === playerName && player.canMove) {
+      directionRef.current = direction;
+      setKeyPrressCount((prev) => prev + 1);
+      moveRedSquare();
+      handleNextStep();
+    }
+  }, [handleNextStep, moveRedSquare, player?.canMove, player?.name]);
+
+  React.useEffect(() => {
+    socket.on(RoomEvents.SEND_HISTORY, handleChatMessage);
+
+    return () => {
+      socket.off(RoomEvents.SEND_HISTORY, handleChatMessage);
+    };
+  }, [handleChatMessage]);
 
   React.useEffect(() => {
     if (player && player.startPoint && !redSquarePos)
@@ -126,12 +156,12 @@ export const Maze: React.FC<Properties> = ({
     window.addEventListener('keydown', handleKeyDown);
 
     updateVisitedCells(redSquarePos?.y, redSquarePos?.x, setVisitedCells);
-    writeHistory();
+    getFeatureStep();
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [handleKeyDown, redSquarePos, writeHistory]);
+  }, [handleKeyDown, redSquarePos, getFeatureStep]);
 
   React.useEffect(() => {
     if (canvasRef.current) {

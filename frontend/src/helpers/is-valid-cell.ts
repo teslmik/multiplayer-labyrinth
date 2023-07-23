@@ -5,7 +5,6 @@ export const isValidCell = (
   col: number,
   maze: boolean[][],
 ): boolean => {
-  console.log('maze: ', maze);
   return (
     row !== undefined &&
     col !== undefined &&

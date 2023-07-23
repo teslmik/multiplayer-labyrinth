@@ -25,9 +25,19 @@
 .listItem {
   display: flex;
   justify-content: flex-start !important;
-  align-items: flex-start !important;
   gap: 6px;
   padding: 4px !important;
+
+  p {
+    color: grey;
+  }
+}
+
+.listText {
+  background-color: #108EE9;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 16px;
 
   span:first-child {
     font-weight: 700;
@@ -41,4 +51,8 @@
     margin-bottom: 10px;
     width: 100%;
   }
+}
+
+.flexReverse {
+  flex-direction: row-reverse;
 }
