@@ -1,4 +1,4 @@
-import { Button } from 'antd';
+import { Button, Popconfirm } from 'antd';
 import React from 'react';
 import { RoomInfoType } from '../../../../types/types';
 import { HistoryList } from '../history-list';
@@ -6,26 +6,60 @@ import { HistoryList } from '../history-list';
 import styles from './styles.module.scss';
 
 type Properties = {
-  handleBack: () => void;
+  handleExit: () => void;
+  handleGiveUp: () => void;
   selectedRoom: RoomInfoType | undefined;
   userName: string | null;
 };
 
 export const GameSidePanelItems: React.FC<Properties> = ({
-  handleBack,
+  handleExit,
+  handleGiveUp,
   selectedRoom,
-  userName
+  userName,
 }) => {
   return (
     <>
-      <Button type="primary" size="large" onClick={handleBack}>
-        Give up
-      </Button>
+      <Popconfirm
+        placement="rightTop"
+        title="Are you sure you want to give up?"
+        onConfirm={handleGiveUp}
+        okText="Yes"
+        cancelText="No"
+      >
+        <Button
+          type="primary"
+          size="large"
+          block
+          disabled={!selectedRoom?.isGameStarted}
+        >
+          Give up
+        </Button>
+      </Popconfirm>
+      <Popconfirm
+        placement="rightTop"
+        title="Are you sure you want to exit?"
+        onConfirm={handleExit}
+        okText="Yes"
+        cancelText="No"
+      >
+        <Button
+          type="primary"
+          size="large"
+          block
+          disabled={selectedRoom?.isGameStarted}
+        >
+          Exit
+        </Button>
+      </Popconfirm>
       <div className={styles.listContainer}>
         <ul style={{ listStyle: 'none' }}>
           {selectedRoom?.players.map((player) => (
             <li key={player.id}>
-              {player.name}{' '}{selectedRoom.players.length === 2 && player.canMove ? 'your move' : ''}
+              {player.name}{' '}
+              {selectedRoom.players.length === 2 && player.canMove
+                ? 'your move'
+                : ''}
             </li>
           ))}
         </ul>

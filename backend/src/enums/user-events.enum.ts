@@ -1,7 +1,7 @@
 export enum UserEvents {
   LOGIN = 'user:login',
   LOGOUT = 'user:logout',
-  GET = 'user:get',
   UPDATE = 'user:update',
+  GIVE_UP = 'user:giveUp',
   EXIST = 'user:exist',
 }

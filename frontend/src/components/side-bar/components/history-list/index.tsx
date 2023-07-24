@@ -3,6 +3,7 @@ import React from 'react';
 import { DIRECTIONS } from '../../../../constants';
 import { SocketContext } from '../../../../context/socket';
 import { RoomEvents } from '../../../../enums';
+import { transformDirection } from '../../../../helpers/helpers';
 import { HistoryType, RoomInfoType } from '../../../../types/types';
 
 import styles from './styles.module.scss';
@@ -58,9 +59,15 @@ export const HistoryList: React.FC<Properties> = ({
     const { input } = await form.validateFields();
 
     if (input.trim() && directionOff()) {
-      socket.emit(RoomEvents.HISTORY, input, currentRoom?.id, userName);
+      socket.emit(RoomEvents.HISTORY, transformDirection(input), currentRoom?.id, userName);
       setValue('');
       form.resetFields();
+    }
+  };
+
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === 'Enter') {
+      onFinish();
     }
   };
 
@@ -113,7 +120,7 @@ export const HistoryList: React.FC<Properties> = ({
         >
           <Mentions
             autoFocus
-            rows={1}
+            rows={2}
             placeholder="input / to select an action"
             prefix={'/'}
             onSearch={onSearch}
@@ -124,6 +131,7 @@ export const HistoryList: React.FC<Properties> = ({
             }))}
             value={value}
             onChange={(text) => setValue(text.trim())}
+            onPressEnter={handleKeyPress}
           />
         </Form.Item>
         <Form.Item name="button">

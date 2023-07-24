@@ -10,47 +10,53 @@ export const GamePage: React.FC = () => {
   const [currentRoom, setCurrentRoom] = React.useState<
     RoomInfoType | undefined
   >();
-  const [maze, setMaze] = React.useState<boolean[][]>([[]]);
 
   const userName = sessionStorage.getItem('username');
 
-  const handleNextStep = () => {
-    if (currentRoom?.isGameStarted) {
-      socket.emit(GameEvents.STEP, currentRoom);
-    }
-  };
+  const handleGetWinner = React.useCallback(
+    (squerPosition: CellPosType) =>
+      socket.emit(GameEvents.END, currentRoom, squerPosition, false),
+    [currentRoom],
+  );
 
-  const handleGetWinner = React.useCallback((squerPosition: CellPosType) =>
-    socket.emit(GameEvents.END, currentRoom, squerPosition), [currentRoom]);
+  const handleGiveUP = React.useCallback(
+    (finishPosition: CellPosType) =>
+      socket.emit(GameEvents.END, currentRoom, finishPosition, true),
+    [currentRoom],
+  );
 
-  const handlSetCurrentRoom = React.useCallback((room: RoomInfoType) => setCurrentRoom(room), []);
-  const handleStartedGame = React.useCallback((maze: boolean[][]) => setMaze(maze), []);
+  const handlSetCurrentRoom = React.useCallback(
+    (room: RoomInfoType) => setCurrentRoom(room),
+    [],
+  );
 
   const roomProps = {
     room: currentRoom,
-    maze,
     userName,
-    handleNextStep,
     handleGetWinner,
   };
 
   React.useEffect(() => {
     socket.on(RoomEvents.OPEN, handlSetCurrentRoom);
-    if (!currentRoom?.isGameStarted && !currentRoom?.isGameEnd) {
-      socket.on(GameEvents.STARTED, handleStartedGame);
-    }
+    socket.on(GameEvents.GIVE_UP_END, handleGiveUP);
+
 
     return () => {
       socket.off(RoomEvents.OPEN, handlSetCurrentRoom);
-      socket.off(GameEvents.STARTED, handleStartedGame);
-    }
+      socket.off(GameEvents.GIVE_UP_END, handleGiveUP);
+    };
   }, [currentRoom?.isGameEnd, currentRoom?.isGameStarted]);
 
   React.useEffect(() => {
-    if (!currentRoom?.isGameEnd && !currentRoom?.isGameStarted && currentRoom?.players?.length === 2) {
+    if (
+      !currentRoom?.isGameEnd &&
+      !currentRoom?.isGameStarted &&
+      currentRoom?.players?.length === 2
+    ) {
+      console.log(RoomEvents.FULL);
       socket.emit(RoomEvents.FULL, currentRoom, config.MAZE_SIZE);
     }
-  }, [currentRoom]);
+  }, [currentRoom, socket]);
 
   return (
     <>

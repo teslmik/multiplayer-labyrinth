@@ -2,31 +2,34 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { DIRECTIONS } from '../../constants';
 import { SocketContext } from '../../context/socket';
-import { RoomEvents } from '../../enums';
+import { GameEvents, RoomEvents } from '../../enums';
 import {
   drawCanvas,
   drawFinishFlag,
   drawMaze,
   drawRedSquare,
   drawVisitedCells,
-  isValidCell,
-  updateVisitedCells,
 } from '../../helpers/helpers';
-import { CellPosType, HistoryType, UserType } from '../../types/types';
+import {
+  CellPosType,
+  HistoryType,
+  RoomInfoType,
+  UserType,
+} from '../../types/types';
 import * as config from './config';
 
+type PrefixType = 'up' | 'down' | 'left' | 'right';
+
 type Properties = {
-  maze: boolean[][];
   player: UserType | undefined;
-  handleNextStep: () => void;
   handleGetWinner: (squerPosition: CellPosType) => void;
+  room: RoomInfoType | undefined;
 };
 
 export const Maze: React.FC<Properties> = ({
-  maze,
   player,
-  handleNextStep,
   handleGetWinner,
+  room,
 }) => {
   const { id } = useParams();
   const socket = React.useContext(SocketContext);
@@ -37,58 +40,49 @@ export const Maze: React.FC<Properties> = ({
       Array(config.MAZE_SIZE).fill(true),
     ),
   );
+  const [maze, setMaze] = React.useState<boolean>(true);
   const [visitedCells, setVisitedCells] = React.useState<boolean[][]>(() =>
     Array.from({ length: config.MAZE_SIZE }, () =>
       Array(config.MAZE_SIZE).fill(false),
     ),
   );
-  const [redSquarePos, setRedSquarePos] = React.useState<CellPosType>(
-    player?.startPoint as {
-      x: number;
-      y: number;
-    },
-  );
+  const [redSquarePos, setRedSquarePos] = React.useState<CellPosType | undefined>();
   const [keyPrressCount, setKeyPrressCount] = React.useState(0);
-  const [featureStep, setFeatureStep] = React.useState<CellPosType>();
+  const [featureStep, setFeatureStep] = React.useState<CellPosType | undefined>();
 
-  const moveRedSquare = React.useCallback(() => {
-    if (
-      directionRef.current === 'up' &&
-      isValidCell(redSquarePos?.y - 1, redSquarePos?.x, maze)
-    ) {
-      setRedSquarePos((prevPos) => ({ ...prevPos, y: prevPos.y - 1 }));
-      updateVisitedCells(redSquarePos?.y - 1, redSquarePos?.x, setVisitedCells);
-    } else if (
-      directionRef.current === 'down' &&
-      isValidCell(redSquarePos?.y + 1, redSquarePos?.x, maze)
-    ) {
-      setRedSquarePos((prevPos) => ({ ...prevPos, y: prevPos.y + 1 }));
-      updateVisitedCells(redSquarePos?.y + 1, redSquarePos?.x, setVisitedCells);
-    } else if (
-      directionRef.current === 'left' &&
-      isValidCell(redSquarePos?.y, redSquarePos?.x - 1, maze)
-    ) {
-      setRedSquarePos((prevPos) => ({ ...prevPos, x: prevPos.x - 1 }));
-      updateVisitedCells(redSquarePos?.y, redSquarePos?.x - 1, setVisitedCells);
-    } else if (
-      directionRef.current === 'right' &&
-      isValidCell(redSquarePos?.y, redSquarePos?.x + 1, maze)
-    ) {
-      setRedSquarePos((prevPos) => ({ ...prevPos, x: prevPos.x + 1 }));
-      updateVisitedCells(redSquarePos?.y, redSquarePos?.x + 1, setVisitedCells);
+  const handleCheck = React.useCallback(
+    (maze: boolean, position: CellPosType) => {
+      setMaze(maze);
+
+      if (maze) {
+        setVisitedCells((prev) => {
+          const newVisitedCells = [...prev];
+          newVisitedCells[position.y][position.x] = true;
+          return newVisitedCells;
+        });
+      }
+
+      setRedSquarePos(position);
+    },
+    [],
+  );
+
+  const handleNextStep = React.useCallback(() => {
+    if (room?.isGameStarted && player?.canMove) {
+      socket.emit(GameEvents.STEP, room, directionRef.current, redSquarePos);
     }
-  }, [maze, redSquarePos]);
+  }, [player?.canMove, redSquarePos, room, socket]);
 
   const getFeatureStep = React.useCallback(() => {
-    if (keyPrressCount) {
+    if (keyPrressCount && redSquarePos) {
       if (directionRef.current === 'up') {
-        setFeatureStep({ x: redSquarePos?.x, y: redSquarePos?.y - 1 });
+        setFeatureStep({ x: redSquarePos.x, y: redSquarePos.y - 1 });
       } else if (directionRef.current === 'down') {
-        setFeatureStep({ x: redSquarePos?.x, y: redSquarePos?.y + 1 });
+        setFeatureStep({ x: redSquarePos.x, y: redSquarePos.y + 1 });
       } else if (directionRef.current === 'left') {
-        setFeatureStep({ x: redSquarePos?.x - 1, y: redSquarePos?.y });
+        setFeatureStep({ x: redSquarePos.x - 1, y: redSquarePos.y });
       } else if (directionRef.current === 'right') {
-        setFeatureStep({ x: redSquarePos?.x + 1, y: redSquarePos?.y });
+        setFeatureStep({ x: redSquarePos.x + 1, y: redSquarePos.y });
       }
     }
   }, [keyPrressCount, redSquarePos]);
@@ -100,40 +94,68 @@ export const Maze: React.FC<Properties> = ({
         directionRef.current = key.replace('Arrow', '').toLowerCase();
 
         setKeyPrressCount((prev) => prev + 1);
-        moveRedSquare();
         handleNextStep();
-        
-        socket.emit(RoomEvents.HISTORY, `/${directionRef.current}`, id, player.name);
+
+        socket.emit(
+          RoomEvents.HISTORY,
+          `(going ${directionRef.current})`,
+          id,
+          player.name,
+        );
       }
     },
-    [handleNextStep, moveRedSquare, player?.canMove],
+    [handleNextStep, player?.canMove, player?.name],
   );
 
-  const handleChatMessage = React.useCallback((historyItem: HistoryType) => {
-    type PrefixType = "up" | "down" | "left" | "right";
+  const handleChatMessage = React.useCallback(
+    (historyItem: HistoryType) => {
+      const { text, playerName } = historyItem;
+      const direction = text
+        .trim()
+        .split(' ')[1]
+        .replace(')', '') as PrefixType;
 
-    const { text, playerName } = historyItem;
-    const direction = text.trim().replace('/', '') as PrefixType;
+      if (
+        DIRECTIONS['/'].includes(direction) &&
+        player?.name === playerName &&
+        player.canMove
+      ) {
+        directionRef.current = direction;
 
-    if (DIRECTIONS['/'].includes(direction) && player?.name === playerName && player.canMove) {
-      directionRef.current = direction;
-      setKeyPrressCount((prev) => prev + 1);
-      moveRedSquare();
-      handleNextStep();
-    }
-  }, [handleNextStep, moveRedSquare, player?.canMove, player?.name]);
+        setKeyPrressCount((prev) => prev + 1);
+        handleNextStep();
+      }
+    },
+    [handleNextStep, player?.canMove, player?.name],
+  );
 
   React.useEffect(() => {
     socket.on(RoomEvents.SEND_HISTORY, handleChatMessage);
+    socket.on(GameEvents.CHECK, handleCheck);
 
     return () => {
       socket.off(RoomEvents.SEND_HISTORY, handleChatMessage);
+      socket.off(GameEvents.CHECK, handleCheck);
     };
   }, [handleChatMessage]);
 
   React.useEffect(() => {
-    if (player && player.startPoint && !redSquarePos)
+    if (player && player.startPoint && !redSquarePos) {
       setRedSquarePos(player.startPoint);
+      setVisitedCells((prev) => {
+        const newVisitedCells = [...prev];
+        const y = player.startPoint?.y;
+        console.log('y: ', y);
+        const x = player.startPoint?.x;
+        console.log('x: ', x);
+
+        if (x && y) {
+          newVisitedCells[y][x] = true;
+        }
+
+        return newVisitedCells;
+      });
+    }
 
     if (
       redSquarePos &&
@@ -144,7 +166,7 @@ export const Maze: React.FC<Properties> = ({
       console.log('Игра завершена!');
       handleGetWinner(redSquarePos);
     }
-  }, [player, redSquarePos]);
+  }, [handleGetWinner, player, redSquarePos]);
 
   React.useEffect(() => {
     if (featureStep) {
@@ -155,7 +177,6 @@ export const Maze: React.FC<Properties> = ({
   React.useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
 
-    updateVisitedCells(redSquarePos?.y, redSquarePos?.x, setVisitedCells);
     getFeatureStep();
 
     return () => {

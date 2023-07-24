@@ -2,27 +2,23 @@ import { Modal, Typography } from 'antd';
 import React from 'react';
 import { SocketContext } from '../../context/socket';
 import { RoomEvents } from '../../enums';
-import { CellPosType, RoomInfoType, UserType } from '../../types/types';
+import { CellPosType, RoomInfoType } from '../../types/types';
 import { Maze } from '../components';
 
 import styles from './styles.module.scss';
 
 type Properties = {
   room: RoomInfoType | undefined;
-  maze: boolean[][];
   userName: string | null;
-  handleNextStep: () => void;
   handleGetWinner: (squerPosition: CellPosType) => void;
 };
 
 export const Room: React.FC<Properties> = ({
   userName,
   room,
-  maze,
-  handleNextStep,
   handleGetWinner,
 }) => {
-  const [winner, setWinner] = React.useState<UserType | undefined>();
+  const [message, setMessage] = React.useState<string>('');
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const socket = React.useContext(SocketContext);
   const findUser = React.useMemo(
@@ -31,18 +27,17 @@ export const Room: React.FC<Properties> = ({
   );
 
   const mazeProps = {
-    maze,
     player: findUser,
-    handleNextStep,
     handleGetWinner,
+    room
   };
 
   const handleOk = () => {
     setIsModalOpen(false);
   };
 
-  const handleWiinerModal = (winner: UserType) => {
-    setWinner(winner);
+  const handleWiinerModal = (message: string) => {
+    setMessage(message);
     setIsModalOpen(true);
   };
   React.useEffect(() => {
@@ -66,7 +61,7 @@ export const Room: React.FC<Properties> = ({
         onOk={handleOk}
         cancelButtonProps={{ style: { display: 'none' } }}
       >
-        <p>Player {winner?.name} has won!</p>
+        <p>{message}</p>
       </Modal>
     </div>
   );
