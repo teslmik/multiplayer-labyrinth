@@ -9,8 +9,8 @@ import {
   Select,
   theme,
 } from 'antd';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { APP_ROUTES, RoomEvents, UserEvents } from '../../enums';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { APP_ROUTES, RoomEvents, SocketEvents, UserEvents } from '../../enums';
 import { SocketContext } from '../../context/socket';
 import { GameSidePanelItems, WaitingList } from './components/components';
 import { ModalInputType, RoomInfoType } from '../../types/types';
@@ -19,6 +19,7 @@ import { CELL_SIZE, MAZE_SIZE } from '../../constants';
 import styles from './styles.module.scss';
 
 export const SideBar: React.FC = () => {
+  const { id } = useParams();
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const socket = React.useContext(SocketContext);
@@ -80,10 +81,13 @@ export const SideBar: React.FC = () => {
 
   React.useEffect(() => {
     const currentRoom = rooms.find(
-      (room) => room.id === pathname.split('/')[3],
+      (room) => room.id === id,
     );
 
-    if (currentRoom) setSelectedRoom(currentRoom);
+    if (currentRoom) {
+      setSelectedRoom(currentRoom);
+      socket.emit(SocketEvents.RECONNECT, currentRoom);
+    }
 
     const handleOpenRoom = (room: RoomInfoType) => setSelectedRoom(room);
     const handleUpdateRooms = (updRooms: RoomInfoType[]) => setRooms(updRooms);
@@ -97,7 +101,7 @@ export const SideBar: React.FC = () => {
       socket.off(RoomEvents.UPDATE, handleUpdateRooms);
       socket.off(RoomEvents.NOTIFICATION, info);
     };
-  }, [pathname, rooms]);
+  }, [id, pathname, rooms, socket]);
 
   React.useEffect(() => {
     form.setFieldsValue({ roomName: '', mazeSize: 5, cellSize: 70 });

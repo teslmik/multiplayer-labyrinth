@@ -27,6 +27,11 @@ export default (io: Server) => {
   io.on(SocketEvents.CONNECTION, (socket) => {
     socket.emit(RoomEvents.UPDATE, removeMazeFromRoom(rooms));
 
+    socket.on(SocketEvents.RECONNECT, (currentRoom: RoomInfoType) => {
+      socket.join(currentRoom.id);
+      socket.emit(RoomEvents.OPEN, currentRoom);
+    });
+
     socket.on(UserEvents.LOGIN, (userName: string) => {
       const findUser = users.find((user) => user.name === userName);
 
@@ -274,10 +279,10 @@ export default (io: Server) => {
       },
     );
 
-    console.log('Новый клиент подключился');
+    console.log('New client connected');
 
     socket.on(SocketEvents.DISCONNECT, () => {
-      console.log('Клиент отключился');
+      console.log('Client disconnected');
     });
   });
 };

@@ -46,9 +46,13 @@ export const Maze: React.FC<Properties> = ({
       Array(room?.config.mazeSize).fill(false),
     ),
   );
-  const [redSquarePos, setRedSquarePos] = React.useState<CellPosType | undefined>();
+  const [redSquarePos, setRedSquarePos] = React.useState<
+    CellPosType | undefined
+  >();
   const [keyPrressCount, setKeyPrressCount] = React.useState(0);
-  const [featureStep, setFeatureStep] = React.useState<CellPosType | undefined>();
+  const [featureStep, setFeatureStep] = React.useState<
+    CellPosType | undefined
+  >();
 
   const handleCheck = React.useCallback(
     (maze: boolean, position: CellPosType) => {
@@ -110,20 +114,22 @@ export const Maze: React.FC<Properties> = ({
   const handleChatMessage = React.useCallback(
     (historyItem: HistoryType) => {
       const { text, playerName } = historyItem;
-      const direction = text
-        .trim()
-        .split(' ')[1]
-        .replace(')', '') as PrefixType;
+      if (text) {
+        const direction = text
+          .trim()
+          .split(' ')[1]
+          .replace(')', '') as PrefixType;
 
-      if (
-        DIRECTIONS['/'].includes(direction) &&
-        player?.name === playerName &&
-        player.canMove
-      ) {
-        directionRef.current = direction;
+        if (
+          DIRECTIONS['/'].includes(direction) &&
+          player?.name === playerName &&
+          player.canMove
+        ) {
+          directionRef.current = direction;
 
-        setKeyPrressCount((prev) => prev + 1);
-        handleNextStep();
+          setKeyPrressCount((prev) => prev + 1);
+          handleNextStep();
+        }
       }
     },
     [handleNextStep, player?.canMove, player?.name],
@@ -145,9 +151,7 @@ export const Maze: React.FC<Properties> = ({
       setVisitedCells((prev) => {
         const newVisitedCells = [...prev];
         const y = player.startPoint?.y;
-        console.log('y: ', y);
         const x = player.startPoint?.x;
-        console.log('x: ', x);
 
         if (x && y) {
           newVisitedCells[y][x] = true;
@@ -170,20 +174,15 @@ export const Maze: React.FC<Properties> = ({
 
   React.useEffect(() => {
     if (featureStep) {
-      drawMaze(canvasDataRef, featureStep.y, featureStep.x, maze, room?.config?.mazeSize);
+      drawMaze(
+        canvasDataRef,
+        featureStep.y,
+        featureStep.x,
+        maze,
+        room?.config?.mazeSize,
+      );
     }
   }, [featureStep, maze]);
-
-  React.useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-
-    getFeatureStep();
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [handleKeyDown, redSquarePos, getFeatureStep]);
-
   React.useEffect(() => {
     if (canvasRef.current) {
       const canvas = canvasRef.current;
@@ -200,17 +199,43 @@ export const Maze: React.FC<Properties> = ({
     }
   }, [player?.finishPoint, redSquarePos, visitedCells]);
 
+  // React.useEffect(() => {
+  //   const textDirections = ['up', 'down', 'left', 'right'];
+  //   if (room?.history) {
+  //     for (let i = 0; i < room?.history.length; i++) {
+  //       const isPlayerDirection = textDirections
+  //         .some((text) => room?.history[i].text === `(going ${text})`)
+  //         && room?.history[i].playerName === player?.name;
+        
+  //       if (isPlayerDirection) {
+  //         console.log(room?.history[i].text);
+  //       }
+  //     }
+  //   }
+  // }, [player?.name, room?.history]);
+
+  React.useEffect(() => {
+    getFeatureStep();
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleKeyDown, redSquarePos, getFeatureStep]);
+
   return (
     <>
-      {room && <canvas
-        ref={canvasRef}
-        width={room.config.mazeSize * room.config.cellSize}
-        height={room.config.mazeSize * room.config.cellSize}
-        style={{
-          border: '4px solid grey',
-          opacity: `${player?.canMove ? 1 : 0.5}`,
-        }}
-      />}
+      {room && (
+        <canvas
+          ref={canvasRef}
+          width={room.config.mazeSize * room.config.cellSize}
+          height={room.config.mazeSize * room.config.cellSize}
+          style={{
+            border: '4px solid grey',
+            opacity: `${player?.canMove ? 1 : 0.5}`,
+          }}
+        />
+      )}
     </>
   );
 };
