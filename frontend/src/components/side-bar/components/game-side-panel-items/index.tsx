@@ -36,23 +36,15 @@ export const GameSidePanelItems: React.FC<Properties> = ({
           Give up
         </Button>
       </Popconfirm>
-      {/* <Popconfirm
-        placement="rightTop"
-        title="Are you sure you want to exit?"
-        onConfirm={handleExit}
-        okText="Yes"
-        cancelText="No"
-      > */}
-        <Button
-          type="primary"
-          size="large"
-          block
-          onClick={handleExit}
-          disabled={selectedRoom?.isGameStarted}
-        >
-          Exit
-        </Button>
-      {/* </Popconfirm> */}
+      <Button
+        type="primary"
+        size="large"
+        block
+        onClick={handleExit}
+        disabled={selectedRoom?.isGameStarted}
+      >
+        Exit
+      </Button>
       <div className={styles.listContainer}>
         <ul style={{ listStyle: 'none' }}>
           {selectedRoom?.players.map((player) => (

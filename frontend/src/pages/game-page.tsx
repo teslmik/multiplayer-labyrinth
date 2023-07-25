@@ -57,7 +57,7 @@ export const GamePage: React.FC = () => {
 
   return (
     <>
-      {currentRoom && currentRoom.players?.length === 2 ? (
+      {currentRoom?.players?.length === 2 || currentRoom?.isGameStarted ? (
         <Room {...roomProps} />
       ) : (
         <RoomTimer />

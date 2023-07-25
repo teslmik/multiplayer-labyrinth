@@ -105,6 +105,7 @@ export const Maze: React.FC<Properties> = ({
           `(going ${directionRef.current})`,
           id,
           player.name,
+          redSquarePos
         );
       }
     },
@@ -136,31 +137,25 @@ export const Maze: React.FC<Properties> = ({
   );
 
   React.useEffect(() => {
-    socket.on(RoomEvents.SEND_HISTORY, handleChatMessage);
-    socket.on(GameEvents.CHECK, handleCheck);
-
-    return () => {
-      socket.off(RoomEvents.SEND_HISTORY, handleChatMessage);
-      socket.off(GameEvents.CHECK, handleCheck);
-    };
-  }, [handleChatMessage]);
-
-  React.useEffect(() => {
-    if (player && player.startPoint && !redSquarePos) {
+    if (keyPrressCount === 0 && player?.startPoint) {
+      console.log('player?.startPoint: ', player?.startPoint);
       setRedSquarePos(player.startPoint);
       setVisitedCells((prev) => {
         const newVisitedCells = [...prev];
-        const y = player.startPoint?.y;
-        const x = player.startPoint?.x;
+        const y = player?.startPoint?.y;
+        const x = player?.startPoint?.x;
 
-        if (x && y) {
+        if (x !== undefined && y !== undefined) {
           newVisitedCells[y][x] = true;
         }
 
+        console.log('newVisitedCells: ', newVisitedCells);
         return newVisitedCells;
       });
     }
+  }, [keyPrressCount, player]);
 
+  React.useEffect(() => {
     if (
       redSquarePos &&
       !player?.finishedAt &&
@@ -170,7 +165,7 @@ export const Maze: React.FC<Properties> = ({
       console.log('Игра завершена!');
       handleGetWinner(redSquarePos);
     }
-  }, [handleGetWinner, player, redSquarePos]);
+  }, [player, redSquarePos]);
 
   React.useEffect(() => {
     if (featureStep) {
@@ -183,6 +178,7 @@ export const Maze: React.FC<Properties> = ({
       );
     }
   }, [featureStep, maze]);
+
   React.useEffect(() => {
     if (canvasRef.current) {
       const canvas = canvasRef.current;
@@ -199,6 +195,16 @@ export const Maze: React.FC<Properties> = ({
     }
   }, [player?.finishPoint, redSquarePos, visitedCells]);
 
+  React.useEffect(() => {
+    socket.on(RoomEvents.SEND_HISTORY, handleChatMessage);
+    socket.on(GameEvents.CHECK, handleCheck);
+
+    return () => {
+      socket.off(RoomEvents.SEND_HISTORY, handleChatMessage);
+      socket.off(GameEvents.CHECK, handleCheck);
+    };
+  }, [handleChatMessage, handleCheck]);
+
   // React.useEffect(() => {
   //   const textDirections = ['up', 'down', 'left', 'right'];
   //   if (room?.history) {
@@ -206,7 +212,7 @@ export const Maze: React.FC<Properties> = ({
   //       const isPlayerDirection = textDirections
   //         .some((text) => room?.history[i].text === `(going ${text})`)
   //         && room?.history[i].playerName === player?.name;
-        
+
   //       if (isPlayerDirection) {
   //         console.log(room?.history[i].text);
   //       }

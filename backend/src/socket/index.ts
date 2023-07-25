@@ -255,7 +255,12 @@ export default (io: Server) => {
 
     socket.on(
       RoomEvents.HISTORY,
-      (text: string, id: string, playerName: string | null) => {
+      (
+        text: string,
+        id: string,
+        playerName: string | null,
+        previosPosition: CellPosType | undefined,
+      ) => {
         const index = rooms.findIndex((room) => room.id === id);
 
         if (index !== -1 && playerName) {
@@ -263,9 +268,17 @@ export default (io: Server) => {
             time: getCurrentTime(),
             playerName,
             text,
+            moves: undefined
           });
 
           const lastHistoryItem = rooms[index].history.slice(-1)[0];
+
+          if (previosPosition) {
+            const maze = rooms[index].maze;
+            const checkPosition = checkNextPosition(text, previosPosition, maze);
+
+            lastHistoryItem.moves = { from: previosPosition, to: checkPosition }
+          }
 
           io.to(id).emit(RoomEvents.OPEN, removeMazeFromRoom(rooms)[index]);
 

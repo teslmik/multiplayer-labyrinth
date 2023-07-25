@@ -2,19 +2,21 @@ import cors from 'cors';
 import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
+import 'dotenv/config';
+
 import socketHandler from './socket/index.js';
+import connectDB from './config/database.js';
+import AppRouter from './routes/index.js';
 
-const PORT = 5001;
+const PORT = process.env.PORT || 5001;
 const app = express();
-
-app.use(cors({ origin: '*' }));
-
+const router = new AppRouter(app);
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: {
-    origin: '*',
-    methods: ["GET", "POST"]
-  },
+  // cors: {
+  //   origin: 'http://localhost:5001',
+  //   methods: ["GET", "POST"]
+  // },
   connectionStateRecovery: {
     maxDisconnectionDuration: 2 * 60 * 1000,
     skipMiddlewares: true,
@@ -22,9 +24,14 @@ const io = new Server(server, {
 });
 
 app.use(express.json());
-app.get('/', (_, res) => res.send('Hello world!'));
 
 socketHandler(io);
+connectDB();
+
+app.use(cors({ credentials: true, origin: 'http://localhost:5173' }));
+app.get('/', (_, res) => res.send('Hello world!'));
+
+router.init();
 
 const start = async () => {
   try {
