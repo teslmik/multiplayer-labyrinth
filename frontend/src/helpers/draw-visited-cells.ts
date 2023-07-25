@@ -1,18 +1,21 @@
-import * as config from '../components/maze/config';
-
 export const drawVisitedCells = (
   ctx: CanvasRenderingContext2D,
   visitedCells: boolean[][],
+  config: { mazeSize: number; cellSize: number } | undefined,
 ) => {
   ctx.fillStyle = 'lightgreen';
-  for (let i = 0; i < config.MAZE_SIZE; i++) {
-    for (let j = 0; j < config.MAZE_SIZE; j++) {
+  if (!config) {
+    return;
+  }
+
+  for (let i = 0; i < config.mazeSize; i++) {
+    for (let j = 0; j < config.mazeSize; j++) {
       if (visitedCells[i][j]) {
         ctx.fillRect(
-          j * config.CELL_SIZE,
-          i * config.CELL_SIZE,
-          config.CELL_SIZE,
-          config.CELL_SIZE,
+          j * config.cellSize,
+          i * config.cellSize,
+          config.cellSize,
+          config.cellSize,
         );
       }
     }

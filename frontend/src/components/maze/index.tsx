@@ -36,14 +36,14 @@ export const Maze: React.FC<Properties> = ({
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const directionRef = React.useRef<string>('');
   const canvasDataRef = React.useRef<boolean[][]>(
-    Array.from({ length: config.MAZE_SIZE }, () =>
-      Array(config.MAZE_SIZE).fill(true),
+    Array.from({ length: room?.config.mazeSize ?? 5 }, () =>
+      Array(room?.config.mazeSize).fill(true),
     ),
   );
   const [maze, setMaze] = React.useState<boolean>(true);
   const [visitedCells, setVisitedCells] = React.useState<boolean[][]>(() =>
-    Array.from({ length: config.MAZE_SIZE }, () =>
-      Array(config.MAZE_SIZE).fill(false),
+    Array.from({ length: room?.config.mazeSize ?? 5 }, () =>
+      Array(room?.config.mazeSize).fill(false),
     ),
   );
   const [redSquarePos, setRedSquarePos] = React.useState<CellPosType | undefined>();
@@ -170,7 +170,7 @@ export const Maze: React.FC<Properties> = ({
 
   React.useEffect(() => {
     if (featureStep) {
-      drawMaze(canvasDataRef, featureStep.y, featureStep.x, maze);
+      drawMaze(canvasDataRef, featureStep.y, featureStep.x, maze, room?.config?.mazeSize);
     }
   }, [featureStep, maze]);
 
@@ -192,23 +192,25 @@ export const Maze: React.FC<Properties> = ({
       if (ctx && player?.finishPoint) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        drawCanvas(ctx, canvasDataRef);
-        drawVisitedCells(ctx, visitedCells);
-        drawRedSquare(ctx, redSquarePos);
-        drawFinishFlag(ctx, player.finishPoint);
+        drawCanvas(ctx, canvasDataRef, room?.config);
+        drawVisitedCells(ctx, visitedCells, room?.config);
+        drawRedSquare(ctx, redSquarePos, room?.config.cellSize);
+        drawFinishFlag(ctx, player.finishPoint, room?.config.cellSize);
       }
     }
   }, [player?.finishPoint, redSquarePos, visitedCells]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      width={config.MAZE_SIZE * config.CELL_SIZE}
-      height={config.MAZE_SIZE * config.CELL_SIZE}
-      style={{
-        border: '4px solid grey',
-        opacity: `${player?.canMove ? 1 : 0.5}`,
-      }}
-    />
+    <>
+      {room && <canvas
+        ref={canvasRef}
+        width={room.config.mazeSize * room.config.cellSize}
+        height={room.config.mazeSize * room.config.cellSize}
+        style={{
+          border: '4px solid grey',
+          opacity: `${player?.canMove ? 1 : 0.5}`,
+        }}
+      />}
+    </>
   );
 };

@@ -3,7 +3,6 @@ import { GameEvents, RoomEvents } from '../enums';
 import { CellPosType, RoomInfoType } from '../types/types';
 import { Room, RoomTimer } from '../components/components';
 import { SocketContext } from '../context/socket';
-import * as config from '../components/maze/config';
 
 export const GamePage: React.FC = () => {
   const socket = React.useContext(SocketContext);
@@ -53,8 +52,7 @@ export const GamePage: React.FC = () => {
       !currentRoom?.isGameStarted &&
       currentRoom?.players?.length === 2
     ) {
-      console.log(RoomEvents.FULL);
-      socket.emit(RoomEvents.FULL, currentRoom, config.MAZE_SIZE);
+      socket.emit(RoomEvents.FULL, currentRoom);
     }
   }, [currentRoom, socket]);
 

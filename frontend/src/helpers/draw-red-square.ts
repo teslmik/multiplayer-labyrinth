@@ -1,19 +1,19 @@
-import * as config from '../components/maze/config';
 import { CellPosType } from '../types/types';
 
 export const drawRedSquare = (
   ctx: CanvasRenderingContext2D,
   position: CellPosType = { x: 0, y: 0 },
+  cellSize: number | undefined
 ) => {
-  if (position) {
+  if (position && cellSize) {
     ctx.fillStyle = 'red';
     ctx.fillRect(
-      position.x * config.CELL_SIZE +
-      (config.CELL_SIZE - config.RED_SQUARE_SIZE) / 2,
-      position.y * config.CELL_SIZE +
-      (config.CELL_SIZE - config.RED_SQUARE_SIZE) / 2,
-      config.RED_SQUARE_SIZE,
-      config.RED_SQUARE_SIZE,
+      position.x * cellSize +
+      (cellSize - cellSize * 0.8) / 2,
+      position.y * cellSize +
+      (cellSize - cellSize * 0.8) / 2,
+      cellSize * 0.8,
+      cellSize * 0.8,
     );
   }
 };

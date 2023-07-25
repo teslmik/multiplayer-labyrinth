@@ -1,11 +1,20 @@
 import React from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { Input, Layout, message, Modal, theme } from 'antd';
+import {
+  Form,
+  Input,
+  Layout,
+  message,
+  Modal,
+  Select,
+  theme,
+} from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { APP_ROUTES, RoomEvents, UserEvents } from '../../enums';
 import { SocketContext } from '../../context/socket';
 import { GameSidePanelItems, WaitingList } from './components/components';
-import { RoomInfoType } from '../../types/types';
+import { ModalInputType, RoomInfoType } from '../../types/types';
+import { CELL_SIZE, MAZE_SIZE } from '../../constants';
 
 import styles from './styles.module.scss';
 
@@ -13,37 +22,34 @@ export const SideBar: React.FC = () => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const socket = React.useContext(SocketContext);
+  const [form] = Form.useForm<ModalInputType>();
   const [messageApi, contextHolder] = message.useMessage();
   const [rooms, setRooms] = React.useState<RoomInfoType[]>([]);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
-  const [roomName, setRoomName] = React.useState('');
   const [selectedRoom, setSelectedRoom] = React.useState<
     RoomInfoType | undefined
   >(undefined);
 
   const userName = sessionStorage.getItem('username');
-
   const {
     token: { colorBgContainer },
   } = theme.useToken();
 
-  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    setRoomName(value);
-  };
-
   const handleNewGame = () => {
-    if (!roomName.trim()) {
-      return;
-    }
+    form.validateFields().then((values) => {
+      const { cellSize, mazeSize, roomName } = values;
+      const id = uuidv4();
 
-    const roomId = uuidv4();
+      socket.emit(
+        RoomEvents.CREATE,
+        { id, name: roomName, config: { mazeSize, cellSize } },
+        userName,
+      );
 
-    socket.emit(RoomEvents.CREATE, { id: roomId, name: roomName }, userName);
-
-    navigate(`game/${roomId}`);
-    setIsModalOpen(false);
-    setRoomName('');
+      navigate(`game/${id}`);
+      setIsModalOpen(false);
+      form.resetFields();
+    });
   };
 
   const handleExit = () => {
@@ -58,24 +64,18 @@ export const SideBar: React.FC = () => {
     }
   };
 
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
+  const showModal = () => setIsModalOpen(true);
+  const info = (message: string) => messageApi.info(message);
 
   const handleCancel = () => {
     setIsModalOpen(false);
-    setRoomName('');
+    form.resetFields();
   };
 
   const handleJoinRoom = (selectedRoomId: string) => {
     socket.emit(RoomEvents.JOIN, selectedRoomId, userName);
     socket.on(RoomEvents.OPEN, (room: RoomInfoType) => setSelectedRoom(room));
     navigate(`game/${selectedRoomId}`);
-  };
-
-  const info = (message: string) => {
-    console.log('message: ', message);
-    messageApi.info(message);
   };
 
   React.useEffect(() => {
@@ -86,8 +86,7 @@ export const SideBar: React.FC = () => {
     if (currentRoom) setSelectedRoom(currentRoom);
 
     const handleOpenRoom = (room: RoomInfoType) => setSelectedRoom(room);
-    const handleUpdateRooms = (updRooms: RoomInfoType[]) =>
-      setRooms(updRooms);
+    const handleUpdateRooms = (updRooms: RoomInfoType[]) => setRooms(updRooms);
 
     socket.on(RoomEvents.OPEN, handleOpenRoom);
     socket.on(RoomEvents.UPDATE, handleUpdateRooms);
@@ -99,6 +98,10 @@ export const SideBar: React.FC = () => {
       socket.off(RoomEvents.NOTIFICATION, info);
     };
   }, [pathname, rooms]);
+
+  React.useEffect(() => {
+    form.setFieldsValue({ roomName: '', mazeSize: 5, cellSize: 70 });
+  }, []);
 
   return (
     <>
@@ -126,13 +129,23 @@ export const SideBar: React.FC = () => {
           onOk={handleNewGame}
           onCancel={handleCancel}
         >
-          <Input
-            placeholder="Game room name"
-            onChange={handleOnChange}
-            onPressEnter={handleNewGame}
-            value={roomName}
-            autoFocus
-          />
+          <Form form={form} layout="vertical" onFinish={handleNewGame}>
+            <Form.Item
+              name="roomName"
+              label="Room name:"
+              rules={[{ required: true, message: 'Room name is required' }]}
+            >
+              <Input placeholder="Game room name" autoFocus />
+            </Form.Item>
+            <div className={styles.configContainer}>
+              <Form.Item name="mazeSize" label="Maze size:">
+                <Select options={MAZE_SIZE} />
+              </Form.Item>
+              <Form.Item name="cellSize" label="Cell size:">
+                <Select options={CELL_SIZE} />
+              </Form.Item>
+            </div>
+          </Form>
         </Modal>
       </Layout.Sider>
     </>

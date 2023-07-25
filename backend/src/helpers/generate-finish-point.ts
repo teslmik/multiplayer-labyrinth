@@ -15,11 +15,6 @@ export const generateFinishPoint = (maze: boolean[][]) => {
     if (maze[rows - 1][j]) edgeCells.push({ x: j, y: rows - 1 });
   }
 
-  // if (edgeCells.length === 0) {
-  //   // Если не удалось найти проходы на краях лабиринта, вернуть undefined
-  //   return undefined;
-  // }
-
   const randomIndex = Math.floor(Math.random() * edgeCells.length);
   const finishPoint = edgeCells[randomIndex];
 

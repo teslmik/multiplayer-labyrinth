@@ -1,6 +1,6 @@
 import { CellPosType } from "../types/types.js";
 
-export const generateMaze = (MAZE_SIZE: number) => {
+export const generateMaze = (size: number) => {
   const createMatrix = (size: number) => {
     const matrix = [];
 
@@ -29,7 +29,7 @@ export const generateMaze = (MAZE_SIZE: number) => {
       directions.push([-2, 0]);
     }
 
-    if (tractor.x < MAZE_SIZE - 1) {
+    if (tractor.x < size - 1) {
       directions.push([2, 0]);
     }
 
@@ -37,7 +37,7 @@ export const generateMaze = (MAZE_SIZE: number) => {
       directions.push([0, -2]);
     }
 
-    if (tractor.y < MAZE_SIZE - 1) {
+    if (tractor.y < size - 1) {
       directions.push([0, 2]);
     }
 
@@ -53,8 +53,8 @@ export const generateMaze = (MAZE_SIZE: number) => {
   }
 
   const isValidMaze = <T>(matrix: Array<T>[]) => {
-    for (let y = 0; y < MAZE_SIZE; y += 2) {
-      for (let x = 0; x < MAZE_SIZE; x += 2) {
+    for (let y = 0; y < size; y += 2) {
+      for (let x = 0; x < size; x += 2) {
         if (!matrix[y][x]) {
           return false;
         }
@@ -64,7 +64,7 @@ export const generateMaze = (MAZE_SIZE: number) => {
     return true;
   }
 
-  const matrix = createMatrix(MAZE_SIZE);
+  const matrix = createMatrix(size);
   const tractor = { x: 0, y: 0 };
   matrix[tractor.y][tractor.x] = true;
 

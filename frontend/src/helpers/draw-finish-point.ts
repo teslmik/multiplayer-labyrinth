@@ -1,16 +1,16 @@
-import * as config from '../components/maze/config';
 import { CellPosType } from '../types/types';
 
 export const drawFinishFlag = (
   ctx: CanvasRenderingContext2D,
   position: CellPosType,
+  cellSize: number | undefined
 ) => {
-  if (position) {
-    const flagSize = config.RED_SQUARE_SIZE;
+  if (position && cellSize) {
+    const flagSize = cellSize * 0.8;
     const squareSize = flagSize / 5;
 
-    const offsetX = (config.CELL_SIZE - flagSize) / 2;
-    const offsetY = (config.CELL_SIZE - flagSize) / 2;
+    const offsetX = (cellSize - flagSize) / 2;
+    const offsetY = (cellSize - flagSize) / 2;
 
     for (let row = 0; row < 5; row++) {
       for (let col = 0; col < 5; col++) {
@@ -18,20 +18,19 @@ export const drawFinishFlag = (
 
         ctx.fillStyle = isWhite ? 'transparent' : 'black';
         ctx.fillRect(
-          position.x * config.CELL_SIZE + offsetX + col * squareSize,
-          position.y * config.CELL_SIZE + offsetY + row * squareSize,
+          position.x * cellSize + offsetX + col * squareSize,
+          position.y * cellSize + offsetY + row * squareSize,
           squareSize,
           squareSize
         );
       }
     }
 
-    // Тонкая черная обводка
     ctx.strokeStyle = 'black';
     ctx.lineWidth = 0,5;
     ctx.strokeRect(
-      position.x * config.CELL_SIZE + offsetX,
-      position.y * config.CELL_SIZE + offsetY,
+      position.x * cellSize + offsetX,
+      position.y * cellSize + offsetY,
       flagSize,
       flagSize
     );

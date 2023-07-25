@@ -1,16 +1,16 @@
-import * as config from '../components/maze/config';
-
 export const drawMaze = (
   ref: React.MutableRefObject<boolean[][]>,
   i: number,
   j: number,
   maze: boolean,
+  mazeSize: number | undefined,
 ) => {
   if (
+    mazeSize &&
     i >= 0 &&
-    i < config.MAZE_SIZE &&
+    i < mazeSize &&
     j >= 0 &&
-    j < config.MAZE_SIZE &&
+    j < mazeSize &&
     !maze
   ) {
     ref.current[i][j] = false;

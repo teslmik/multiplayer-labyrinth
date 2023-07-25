@@ -14,6 +14,7 @@ import {
 } from '../helpers/helpers.js';
 import {
   CellPosType,
+  CreateRoomType,
   RoomInfoType,
   RoomType,
   UserType,
@@ -57,26 +58,27 @@ export default (io: Server) => {
 
     socket.on(
       RoomEvents.CREATE,
-      (currentRoom: { id: string; name: string }, userName: string) => {
+      (createdRoom: CreateRoomType, userName: string) => {
         const findUser = users.find((user) => user.name === userName);
-        let findRoom = rooms.find((room) => room.id === currentRoom.id);
+        let findRoom = rooms.find((room) => room.id === createdRoom.id);
 
         if (findUser && !findRoom) {
-          findUser.canMove = false
+          findUser.canMove = false;
           findUser.finishedAt = null;
 
           findRoom = {
-            id: currentRoom.id,
-            name: currentRoom.name,
+            id: createdRoom.id,
+            name: createdRoom.name,
             players: [findUser],
             isGameStarted: false,
             isGameEnd: false,
+            config: createdRoom.config,
             maze: [[]],
             history: [],
           };
           rooms.push(findRoom);
 
-          socket.join(currentRoom.id);
+          socket.join(createdRoom.id);
           socket.emit(RoomEvents.OPEN, findRoom);
           io.sockets.emit(RoomEvents.UPDATE, removeMazeFromRoom(rooms));
           socket.broadcast.emit(
@@ -154,7 +156,7 @@ export default (io: Server) => {
       io.sockets.emit(RoomEvents.UPDATE, removeMazeFromRoom(rooms));
     });
 
-    socket.on(RoomEvents.FULL, (currentRoom: RoomType, mazeSize: number) => {
+    socket.on(RoomEvents.FULL, (currentRoom: RoomType) => {
       const index = rooms.findIndex((room) => room.id === currentRoom.id);
 
       if (
@@ -162,7 +164,7 @@ export default (io: Server) => {
         rooms[index].players.every((player) => !player.canMove) &&
         rooms[index].maze.length !== 0
       ) {
-        const maze = generateMaze(mazeSize);
+        const maze = generateMaze(rooms[index].config.mazeSize);
         const finishPosition = generateFinishPoint(maze);
         const startPosition = generateStartPoints(maze, finishPosition);
 
@@ -275,12 +277,6 @@ export default (io: Server) => {
     console.log('Новый клиент подключился');
 
     socket.on(SocketEvents.DISCONNECT, () => {
-      // const user = users.find((player) => player.id !== socket.id);
-      // const findRoom = rooms.find((room) => room.players.some((player) => player.id === socket.id));
-
-      // socket.emit(RoomEvents.EXIT, findRoom?.id, user?.name);
-      // socket.emit(UserEvents.LOGOUT, user?.name);
-
       console.log('Клиент отключился');
     });
   });
