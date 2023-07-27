@@ -9,13 +9,13 @@ import {
   drawMaze,
   drawRedSquare,
   drawVisitedCells,
-} from '../../helpers/helpers';
+} from '../../helpers';
 import {
   CellPosType,
   HistoryType,
   RoomInfoType,
   UserType,
-} from '../../types/types';
+} from '../../types';
 import * as config from './config';
 
 type PrefixType = 'up' | 'down' | 'left' | 'right';

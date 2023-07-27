@@ -2,8 +2,8 @@ import { Modal, Typography } from 'antd';
 import React from 'react';
 import { SocketContext } from '../../context/socket';
 import { RoomEvents } from '../../enums';
-import { CellPosType, RoomInfoType } from '../../types/types';
-import { Maze } from '../components';
+import { CellPosType, RoomInfoType } from '../../types';
+import { Maze } from '..';
 
 import styles from './styles.module.scss';
 

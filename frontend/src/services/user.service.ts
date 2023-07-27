@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
 import { APP_KEYS } from '../constants';
-import { UserType } from '../types/types';
+import { UserType } from '../types';
 import api from './http.service';
 
 class UserService {

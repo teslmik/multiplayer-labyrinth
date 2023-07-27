@@ -1,4 +1,4 @@
-import { CellPosType } from '../types/types';
+import { CellPosType } from '../types';
 
 export const drawFinishFlag = (
   ctx: CanvasRenderingContext2D,
@@ -27,7 +27,7 @@ export const drawFinishFlag = (
     }
 
     ctx.strokeStyle = 'black';
-    ctx.lineWidth = 0,5;
+    ctx.lineWidth = 0, 5;
     ctx.strokeRect(
       position.x * cellSize + offsetX,
       position.y * cellSize + offsetY,

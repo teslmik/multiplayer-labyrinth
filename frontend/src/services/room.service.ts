@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
 import { APP_KEYS } from '../constants';
-import { RoomInfoType } from '../types/types';
+import { RoomInfoType } from '../types';
 import api from './http.service';
 
 class RoomService {

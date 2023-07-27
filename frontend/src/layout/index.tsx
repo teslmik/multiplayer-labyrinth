@@ -2,7 +2,7 @@ import React from 'react';
 import { Layout } from 'antd';
 import { Outlet, useLocation } from 'react-router-dom';
 import { APP_ROUTES } from '../enums';
-import { AppFooter, AppHeader } from '../components/components';
+import { AppFooter, AppHeader } from '../components';
 
 const MainLayout: React.FC = () => {
   const { pathname } = useLocation();

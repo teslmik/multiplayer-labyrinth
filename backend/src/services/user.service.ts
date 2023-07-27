@@ -11,7 +11,7 @@ export default class UserService {
   }
 
   async singUp(userName: string): Promise<User> {
-    const checkName = await this.findUserByName(userName);
+    const checkName = await this.userRepository.findOne({ where: { name: userName } });
 
     if (checkName) {
       throw new Error(`User with name ${userName} already exists`);

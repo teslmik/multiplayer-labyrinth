@@ -1,7 +1,7 @@
 import { Button, List } from 'antd';
 import React from 'react';
-import { RoomInfoType } from '../../../../types/types';
-import { SideBarItems } from '../components';
+import { RoomInfoType } from '../../../../types';
+import { SideBarItems } from '..';
 
 type Properties = {
   showModal: () => void;

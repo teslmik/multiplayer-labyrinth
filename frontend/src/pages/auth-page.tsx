@@ -20,7 +20,8 @@ export const LoginPage: React.FC = () => {
     setUserName(value);
   };
 
-  const handleOnSubmit = async () => {
+  const handleOnSubmit = async (isLogin: boolean) => {
+    console.log('isLogin: ', isLogin);
     if (!userName) {
       return;
     }
@@ -28,8 +29,8 @@ export const LoginPage: React.FC = () => {
     try {
       setIsLoading(true);
       const { data: user } = isLogin
-        ? await UserService.login(userName)
-        : await UserService.registration(userName);
+        ? (await UserService.login(userName))
+        : (await UserService.registration(userName));
       
       socket.emit(UserEvents.LOGIN, user);
 
@@ -67,7 +68,7 @@ export const LoginPage: React.FC = () => {
           <Typography.Title underline level={1} style={{textAlign: 'center'}}>
             {isLogin ? 'Login' : 'Registration'}
           </Typography.Title>
-          <Form form={form} onFinish={handleOnSubmit}>
+          <Form form={form} onFinish={() => handleOnSubmit(isLogin)}>
             <Form.Item
               rules={[{ required: true, message: 'Name is required' }]}
               required
@@ -78,7 +79,7 @@ export const LoginPage: React.FC = () => {
                 style={{ width: 300 }}
                 placeholder="Enter your name"
                 onChange={handleOnChange}
-                onPressEnter={handleOnSubmit}
+                onPressEnter={() => handleOnSubmit(isLogin)}
               />
             </Form.Item>
             <Form.Item>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { GameEvents, RoomEvents } from '../enums';
-import { CellPosType, RoomInfoType } from '../types/types';
-import { Room, RoomTimer } from '../components/components';
+import { CellPosType, RoomInfoType } from '../types';
+import { Room, RoomTimer } from '../components';
 import { SocketContext } from '../context/socket';
 import { Typography } from 'antd';
 import { useParams } from 'react-router-dom';
@@ -10,7 +10,7 @@ export const GamePage: React.FC = () => {
   const { id } = useParams();
   const socket = React.useContext(SocketContext);
   const [currentRoom, setCurrentRoom] = React.useState<
-  RoomInfoType | undefined
+    RoomInfoType | undefined
   >();
   console.log('currentRoom: ', currentRoom);
 
@@ -80,7 +80,7 @@ export const GamePage: React.FC = () => {
       }}
     >
       <Typography.Title level={2}>Room {currentRoom?.name}</Typography.Title>
-      <div style={{display: 'flex', flex: '1 1 auto', alignItems: 'center'}}>
+      <div style={{ display: 'flex', flex: '1 1 auto', alignItems: 'center' }}>
         {currentRoom?.players?.length === 2 || currentRoom?.isGameStarted ? (
           <Room {...roomProps} />
         ) : (

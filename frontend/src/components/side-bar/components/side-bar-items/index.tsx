@@ -1,7 +1,7 @@
 import { Avatar, List } from 'antd';
 import React from 'react';
-import { formatTime } from '../../../../helpers/helpers';
-import { RoomInfoType } from '../../../../types/types';
+import { formatTime } from '../../../../helpers';
+import { RoomInfoType } from '../../../../types';
 
 import styles from './styles.module.scss';
 

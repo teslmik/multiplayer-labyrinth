@@ -1,4 +1,4 @@
-import { CellPosType } from "./types";
+import { CellPosType } from ".";
 
 export type UserType = {
   id: string;

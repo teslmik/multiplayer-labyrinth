@@ -1,4 +1,4 @@
-import { CellPosType } from '../types/types';
+import { CellPosType } from '../types';
 
 export const drawRedSquare = (
   ctx: CanvasRenderingContext2D,

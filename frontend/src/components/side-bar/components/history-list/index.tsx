@@ -3,8 +3,8 @@ import React from 'react';
 import { DIRECTIONS } from '../../../../constants';
 import { SocketContext } from '../../../../context/socket';
 import { RoomEvents } from '../../../../enums';
-import { transformDirection } from '../../../../helpers/helpers';
-import { HistoryType, RoomInfoType } from '../../../../types/types';
+import { transformDirection } from '../../../../helpers';
+import { HistoryType, RoomInfoType } from '../../../../types';
 
 import styles from './styles.module.scss';
 
