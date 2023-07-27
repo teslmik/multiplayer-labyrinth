@@ -1,9 +1,6 @@
 import { Server } from 'socket.io';
 import { Room } from '../entities';
-import { GameEvents } from '../enums/game-events.enum.js';
-import { RoomEvents } from '../enums/room-events.enum.js';
-import { SocketEvents } from '../enums/socket-events.enum.js';
-import { UserEvents } from '../enums/user-events.enum.js';
+import { GameEvents, RoomEvents, SocketEvents, UserEvents } from '../enums';
 import {
   checkNextPosition,
   generateFinishPoint,
@@ -12,7 +9,7 @@ import {
   getCurrentTime,
   removeMazeFromRoom,
 } from '../helpers/helpers.js';
-import { CellPosType, RoomInfoType, RoomType } from '../types/types.js';
+import { CellPosType, RoomInfoType, RoomType } from '../types';
 import RoomService from '../services/room.service';
 
 const roomService = new RoomService();
@@ -20,8 +17,11 @@ let appRooms: Room[];
 
 export default (io: Server) => {
   io.on(SocketEvents.CONNECTION, async (socket) => {
-    const allRooms = await roomService.findAll();
-    appRooms = allRooms;
+    if (!appRooms) {
+      const allRooms = await roomService.findAll();
+      console.log('appRooms-in-if: ', appRooms);
+      appRooms = allRooms;
+    }
 
     socket.on(SocketEvents.RECONNECT, async (currentRoom: RoomInfoType) => {
       const rooms = await roomService.findAll();
@@ -30,7 +30,14 @@ export default (io: Server) => {
         socket.join(currentRoom.id);
         socket.emit(RoomEvents.OPEN, currentRoom);
       }
-      appRooms = rooms;
+      console.log('appRooms: ', appRooms);
+
+      if (appRooms.length === 0) {
+        console.log('appRooms-in-if: ', appRooms);
+        appRooms = rooms;
+      }
+      console.log('rooms: ', rooms);
+
       socket.emit(RoomEvents.UPDATE, removeMazeFromRoom(appRooms));
     });
 

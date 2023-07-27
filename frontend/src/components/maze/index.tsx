@@ -31,6 +31,8 @@ export const Maze: React.FC<Properties> = ({
   handleGetWinner,
   room,
 }) => {
+  console.log('room', room);
+  console.log('player: ', player);
   const { id } = useParams();
   const socket = React.useContext(SocketContext);
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
@@ -202,21 +204,6 @@ export const Maze: React.FC<Properties> = ({
       socket.off(GameEvents.CHECK, handleCheck);
     };
   }, [handleChatMessage, handleCheck]);
-
-  // React.useEffect(() => {
-  //   const textDirections = ['up', 'down', 'left', 'right'];
-  //   if (room?.history) {
-  //     for (let i = 0; i < room?.history.length; i++) {
-  //       const isPlayerDirection = textDirections
-  //         .some((text) => room?.history[i].text === `(going ${text})`)
-  //         && room?.history[i].playerName === player?.name;
-
-  //       if (isPlayerDirection) {
-  //         console.log(room?.history[i].text);
-  //       }
-  //     }
-  //   }
-  // }, [player?.name, room?.history]);
 
   React.useEffect(() => {
     getFeatureStep();

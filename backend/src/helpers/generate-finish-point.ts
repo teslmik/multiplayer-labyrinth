@@ -1,4 +1,4 @@
-import { CellPosType } from "../types/types.js";
+import { CellPosType } from "../types/index.js";
 
 export const generateFinishPoint = (maze: boolean[][]) => {
   const rows = maze.length;

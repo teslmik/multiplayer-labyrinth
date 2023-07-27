@@ -1,5 +1,5 @@
 import { Response, Request, NextFunction } from 'express';
-import { CreateRoomType } from '../types/types';
+import { CreateRoomType } from '../types';
 import RoomService from '../services/room.service';
 
 export class RoomController {

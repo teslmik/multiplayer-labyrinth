@@ -1,20 +1,20 @@
 import { Repository } from 'typeorm';
 import { appDataSource } from '../config/app-data-source';
-import { CreateRoomType, RoomInfoType } from '../types/types';
+import { CreateRoomType, RoomInfoType } from '../types';
 import { Room } from '../entities';
 import { removeMazeFromRoom } from '../helpers/helpers';
 import UserService from './user.service';
 
 export default class RoomService {
   private readonly roomRepository: Repository<Room>;
-  private readonly userSevrice = new UserService();
+  private readonly userService = new UserService();
 
   constructor() {
     this.roomRepository = appDataSource.getRepository(Room);
   }
 
   async create(roomData: CreateRoomType): Promise<RoomInfoType> {
-    const user = await this.userSevrice.findUserByName(roomData.userName);
+    const user = await this.userService.findUserByName(roomData.userName);
 
     if (!user) {
       throw new Error('User not found');
@@ -34,7 +34,7 @@ export default class RoomService {
   }
 
   async join({ roomId, userName }: { roomId: string; userName: string }): Promise<RoomInfoType> {
-    const user = await this.userSevrice.findUserByName(userName);
+    const user = await this.userService.findUserByName(userName);
     const currentRoom = await this.roomRepository.findOne({
       where: { id: roomId },
       relations: ['owner'],
@@ -78,7 +78,7 @@ export default class RoomService {
     return removeMazeFromRoom(updatedRoom) as RoomInfoType;
   }
 
-  async delete(roomId: string): Promise <Room[]> {
+  async delete(roomId: string): Promise<Room[]> {
     await this.roomRepository.delete(roomId);
     const rooms = await this.findAll();
 

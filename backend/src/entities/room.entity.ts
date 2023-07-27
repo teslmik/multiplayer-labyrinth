@@ -5,7 +5,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { HistoryType } from '../types/types';
+import { HistoryType } from '../types';
 import { User } from './user.entity';
 
 @Entity()
@@ -25,7 +25,7 @@ export class Room extends BaseEntity {
   @Column({ default: false })
   isGameEnd: boolean;
 
-  @Column('json', { nullable: true, default: { mazeSize: 5, cellSize: 70 } })
+  @Column('json', { nullable: true })
   config: { mazeSize: number; cellSize: number };
 
   @Column('json', { default: [[]] })
@@ -40,6 +40,6 @@ export class Room extends BaseEntity {
   })
   createdAt: string;
 
-  @ManyToOne(() => User, (user) => user.rooms, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.rooms)
   owner: User;
 }

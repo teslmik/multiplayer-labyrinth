@@ -1,4 +1,4 @@
-import { HistoryType, UserType } from "./types.js";
+import { HistoryType, UserType } from "./index.js";
 
 export type RoomInfoType = {
   id: string;

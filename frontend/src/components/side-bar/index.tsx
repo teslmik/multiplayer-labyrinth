@@ -98,13 +98,20 @@ export const SideBar: React.FC = () => {
     const currentRoom = rooms?.find((room) => room.id === id);
 
     if (!rooms.length && !currentRoom) {
-      socket.emit(SocketEvents.RECONNECT, currentRoom);
+      socket.emit(SocketEvents.RECONNECT, currentRoom, userName);
     }
   }, [id]);
 
   React.useEffect(() => {
     const handleOpenRoom = (room: RoomInfoType) => setSelectedRoom(room);
-    const handleUpdateRooms = (updRooms: RoomInfoType[]) => setRooms(updRooms);
+    const handleUpdateRooms = (updRooms: RoomInfoType[]) => {
+      setRooms(updRooms);
+
+      if (!selectedRoom && id) {
+        const currentRoom = updRooms.find(room => room.id === id);
+        setSelectedRoom(currentRoom);
+      }
+    };
 
     socket.on(RoomEvents.OPEN, handleOpenRoom);
     socket.on(RoomEvents.UPDATE, handleUpdateRooms);

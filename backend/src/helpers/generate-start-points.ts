@@ -1,4 +1,4 @@
-import { CellPosType } from "../types/types.js";
+import { CellPosType } from "../types/index.js";
 
 const getRandomNumber = (min: number, max: number) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;

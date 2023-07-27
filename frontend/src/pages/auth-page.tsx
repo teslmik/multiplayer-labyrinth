@@ -1,13 +1,15 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Form, Input, Space, Spin, Typography } from 'antd';
-import { APP_ROUTES } from '../enums';
+import { APP_ROUTES, UserEvents } from '../enums';
 import { UserService } from '../services/user.service';
 import { useAppMessage } from '../hooks/use-app-message';
+import { SocketContext } from '../context/socket';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
+  const socket = React.useContext(SocketContext);
   const [userName, setUserName] = React.useState('');
   const [isLogin, setIsLogin] = React.useState(true);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -28,6 +30,8 @@ export const LoginPage: React.FC = () => {
       const { data: user } = isLogin
         ? await UserService.login(userName)
         : await UserService.registration(userName);
+      
+      socket.emit(UserEvents.LOGIN, user);
 
       sessionStorage.setItem('username', user.name);
       navigate(APP_ROUTES.DASHDOARD);

@@ -1,4 +1,4 @@
-import { CellPosType } from "./types.js";
+import { CellPosType } from "./index.js";
 
 export type UserType = {
   id: string;

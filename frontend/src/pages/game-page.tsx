@@ -4,12 +4,15 @@ import { CellPosType, RoomInfoType } from '../types/types';
 import { Room, RoomTimer } from '../components/components';
 import { SocketContext } from '../context/socket';
 import { Typography } from 'antd';
+import { useParams } from 'react-router-dom';
 
 export const GamePage: React.FC = () => {
+  const { id } = useParams();
   const socket = React.useContext(SocketContext);
   const [currentRoom, setCurrentRoom] = React.useState<
-    RoomInfoType | undefined
+  RoomInfoType | undefined
   >();
+  console.log('currentRoom: ', currentRoom);
 
   const userName = sessionStorage.getItem('username');
 
@@ -39,12 +42,21 @@ export const GamePage: React.FC = () => {
   };
 
   React.useEffect(() => {
+    const handleUpdateRooms = (updRooms: RoomInfoType[]) => {
+      if (!currentRoom && id) {
+        const room = updRooms.find(room => room.id === id);
+        setCurrentRoom(room);
+      }
+    };
+
     socket.on(RoomEvents.OPEN, handlSetCurrentRoom);
     socket.on(GameEvents.GIVE_UP_END, handleGiveUP);
+    socket.on(RoomEvents.UPDATE, handleUpdateRooms);
 
     return () => {
       socket.off(RoomEvents.OPEN, handlSetCurrentRoom);
       socket.off(GameEvents.GIVE_UP_END, handleGiveUP);
+      socket.off(RoomEvents.UPDATE, handleUpdateRooms);
     };
   }, [currentRoom, handlSetCurrentRoom, handleGiveUP, socket]);
 

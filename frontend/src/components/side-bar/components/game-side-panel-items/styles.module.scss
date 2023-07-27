@@ -1,7 +1,26 @@
 .listContainer {
-  flex: 1 1 auto;
+  margin-top: 12px;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
 }
 
 .userItem {
-  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 6px;
+  height: 40px;
+  min-width: 120px;
+  width: 100%;
+  border: solid 1px #d9d9d9;
+  border-radius: 8px;
+}
+
+.move {
+  background-color: aquamarine;
 }
