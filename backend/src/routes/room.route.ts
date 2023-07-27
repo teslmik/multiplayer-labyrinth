@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { tryCatchMiddleware } from '../middlewares/try-catch.middleware';
-import roomController from '../controllers/room.controller';
+import { tryCatchMiddleware } from '../middlewares/try-catch.middleware.js';
+import roomController from '../controllers/room.controller.js';
 
 const router: Router = Router();
 

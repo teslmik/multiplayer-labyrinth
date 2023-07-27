@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { tryCatchMiddleware } from '../middlewares/try-catch.middleware';
-import userController from '../controllers/user.controller';
+import { tryCatchMiddleware } from '../middlewares/try-catch.middleware.js';
+import userController from '../controllers/user.controller.js';
 
 const router: Router = Router();
 

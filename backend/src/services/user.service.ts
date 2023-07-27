@@ -1,7 +1,7 @@
 import { Repository } from 'typeorm';
 
-import { appDataSource } from '../config/app-data-source';
-import { User } from '../entities';
+import { appDataSource } from '../config/app-data-source.js';
+import { User } from '../entities/index.js';
 
 export default class UserService {
   private readonly userRepository: Repository<User>;

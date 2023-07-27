@@ -1,9 +1,9 @@
 import { Repository } from 'typeorm';
-import { appDataSource } from '../config/app-data-source';
-import { CreateRoomType, RoomInfoType } from '../types';
+import { appDataSource } from '../config/app-data-source.js';
+import { CreateRoomType, RoomInfoType } from '../types/index.js';
 import { Room } from '../entities';
-import { removeMazeFromRoom } from '../helpers/helpers';
-import UserService from './user.service';
+import { removeMazeFromRoom } from '../helpers/helpers.js';
+import UserService from './user.service.js';
 
 export default class RoomService {
   private readonly roomRepository: Repository<Room>;

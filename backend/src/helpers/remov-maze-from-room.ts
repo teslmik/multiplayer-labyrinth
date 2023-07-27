@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Room } from "../entities";
-import { RoomInfoType } from "../types";
+import { Room } from "../entities/index.js";
+import { RoomInfoType } from "../types/index.js";
 
 export const removeMazeFromRoom = (rooms: Room | Room[]): RoomInfoType | RoomInfoType[] => {
   if (Array.isArray(rooms)) {

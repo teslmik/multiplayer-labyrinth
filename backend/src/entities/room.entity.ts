@@ -5,8 +5,8 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { HistoryType } from '../types';
-import { User } from './user.entity';
+import { HistoryType } from '../types/index.js';
+import { User } from './user.entity.js';
 
 @Entity()
 export class Room extends BaseEntity {

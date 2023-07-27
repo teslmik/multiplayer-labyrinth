@@ -1,6 +1,6 @@
 import { Server } from 'socket.io';
-import { Room } from '../entities';
-import { GameEvents, RoomEvents, SocketEvents, UserEvents } from '../enums';
+import { Room } from '../entities/index.js';
+import { GameEvents, RoomEvents, SocketEvents, UserEvents } from '../enums/index.js';
 import {
   checkNextPosition,
   generateFinishPoint,
@@ -9,8 +9,8 @@ import {
   getCurrentTime,
   removeMazeFromRoom,
 } from '../helpers/helpers.js';
-import { CellPosType, RoomInfoType, RoomType } from '../types';
-import RoomService from '../services/room.service';
+import { CellPosType, RoomInfoType, RoomType } from '../types/index.js';
+import RoomService from '../services/room.service.js';
 
 const roomService = new RoomService();
 let appRooms: Room[];

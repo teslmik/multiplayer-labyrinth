@@ -1,6 +1,6 @@
 import { Application } from 'express';
-import roomsRouter from './room.route';
-import userRouter from './user.route';
+import roomsRouter from './room.route.js';
+import userRouter from './user.route.js';
 
 class AppRouter {
   constructor(private app: Application) { }
