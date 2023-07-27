@@ -41,7 +41,7 @@ export const HistoryList: React.FC<Properties> = ({
   };
 
   const directionOff = () => {
-    const findPlayer = currentRoom?.players.find(player => player.name === userName);
+    const findPlayer = currentRoom?.players?.find(player => player.name === userName);
 
     if (!currentRoom?.isGameStarted || !findPlayer?.canMove) return !isCommand(value);
     else return true;
@@ -90,7 +90,7 @@ export const HistoryList: React.FC<Properties> = ({
         <List
           className={styles.listItems}
           size="small"
-          dataSource={currentRoom?.history}
+          dataSource={currentRoom?.history ?? []}
           renderItem={(item) => (
             <List.Item className={listItemStyle(item)}>
               <p>{item.time}</p>
