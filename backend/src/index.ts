@@ -13,10 +13,10 @@ const app = express();
 const router = new AppRouter(app);
 const server = http.createServer(app);
 const io = new Server(server, {
-  // cors: {
-  //   origin: 'http://localhost:5001',
-  //   methods: ["GET", "POST"]
-  // },
+  cors: {
+    origin: process.env.CLIENT_URL,
+    methods: ["GET", "POST"]
+  },
   connectionStateRecovery: {
     maxDisconnectionDuration: 2 * 60 * 1000,
     skipMiddlewares: true,
@@ -28,8 +28,7 @@ app.use(express.json());
 socketHandler(io);
 connectDB();
 
-app.use(cors({ credentials: true, origin: 'http://localhost:5173' }));
-app.get('/', (_, res) => res.send('Hello world!'));
+app.use(cors({ credentials: true, origin: process.env.CLIENT_URL }));
 
 router.init();
 

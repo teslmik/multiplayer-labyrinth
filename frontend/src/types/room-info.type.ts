@@ -1,11 +1,13 @@
 import { HistoryType, UserType } from "./types.js";
 
 export type RoomInfoType = {
-  id: string;
-  name: string;
-  players: UserType[];
-  isGameStarted: boolean;
   config: { mazeSize: number; cellSize: number };
-  history: HistoryType[];
+  createdAt: string;
+  history: HistoryType[] | null;
+  id: string;
   isGameEnd: boolean;
+  isGameStarted: boolean;
+  name: string;
+  owner: UserType;
+  players: UserType[] | null;
 }

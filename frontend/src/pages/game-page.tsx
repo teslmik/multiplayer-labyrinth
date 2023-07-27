@@ -3,6 +3,7 @@ import { GameEvents, RoomEvents } from '../enums';
 import { CellPosType, RoomInfoType } from '../types/types';
 import { Room, RoomTimer } from '../components/components';
 import { SocketContext } from '../context/socket';
+import { Typography } from 'antd';
 
 export const GamePage: React.FC = () => {
   const socket = React.useContext(SocketContext);
@@ -25,7 +26,9 @@ export const GamePage: React.FC = () => {
   );
 
   const handlSetCurrentRoom = React.useCallback(
-    (room: RoomInfoType) => setCurrentRoom(room),
+    (room: RoomInfoType) => {
+      setCurrentRoom(room);
+    },
     [],
   );
 
@@ -56,12 +59,22 @@ export const GamePage: React.FC = () => {
   }, [currentRoom, socket]);
 
   return (
-    <>
-      {currentRoom?.players?.length === 2 || currentRoom?.isGameStarted ? (
-        <Room {...roomProps} />
-      ) : (
-        <RoomTimer />
-      )}
-    </>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        height: '100%',
+      }}
+    >
+      <Typography.Title level={2}>Room {currentRoom?.name}</Typography.Title>
+      <div style={{display: 'flex', flex: '1 1 auto', alignItems: 'center'}}>
+        {currentRoom?.players?.length === 2 || currentRoom?.isGameStarted ? (
+          <Room {...roomProps} />
+        ) : (
+          <RoomTimer room={currentRoom} />
+        )}
+      </div>
+    </div>
   );
 };

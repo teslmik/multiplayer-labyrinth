@@ -1,20 +1,13 @@
 import React from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import {
-  Form,
-  Input,
-  Layout,
-  message,
-  Modal,
-  Select,
-  theme,
-} from 'antd';
+import { Form, Input, Layout, Modal, Select, Spin, theme } from 'antd';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { APP_ROUTES, RoomEvents, SocketEvents, UserEvents } from '../../enums';
 import { SocketContext } from '../../context/socket';
 import { GameSidePanelItems, WaitingList } from './components/components';
 import { ModalInputType, RoomInfoType } from '../../types/types';
 import { CELL_SIZE, MAZE_SIZE } from '../../constants';
+import { RoomService } from '../../services/room.service';
+import { useAppMessage } from '../../hooks/use-app-message';
 
 import styles from './styles.module.scss';
 
@@ -24,7 +17,8 @@ export const SideBar: React.FC = () => {
   const navigate = useNavigate();
   const socket = React.useContext(SocketContext);
   const [form] = Form.useForm<ModalInputType>();
-  const [messageApi, contextHolder] = message.useMessage();
+  const { appMessage, contextHolder } = useAppMessage();
+  const [isLoading, setIsLoading] = React.useState(false);
   const [rooms, setRooms] = React.useState<RoomInfoType[]>([]);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [selectedRoom, setSelectedRoom] = React.useState<
@@ -36,20 +30,35 @@ export const SideBar: React.FC = () => {
     token: { colorBgContainer },
   } = theme.useToken();
 
+  const showModal = () => setIsModalOpen(true);
+  const info = (message: string) => appMessage(message, 'info');
+
   const handleNewGame = () => {
-    form.validateFields().then((values) => {
+    form.validateFields().then(async (values) => {
       const { cellSize, mazeSize, roomName } = values;
-      const id = uuidv4();
 
-      socket.emit(
-        RoomEvents.CREATE,
-        { id, name: roomName, config: { mazeSize, cellSize } },
-        userName,
-      );
+      try {
+        setIsLoading(true);
+        setIsModalOpen(false);
 
-      navigate(`game/${id}`);
-      setIsModalOpen(false);
-      form.resetFields();
+        const { data: room } = await RoomService.create({
+          cellSize,
+          mazeSize,
+          name: roomName,
+          userName,
+        });
+
+        socket.emit(RoomEvents.CREATE, room);
+
+        setSelectedRoom(room);
+        navigate(`game/${room.id}`);
+
+        form.resetFields();
+      } catch (err: any) {
+        appMessage(err.response.data.message, 'error');
+      } finally {
+        setIsLoading(false);
+      }
     });
   };
 
@@ -65,30 +74,35 @@ export const SideBar: React.FC = () => {
     }
   };
 
-  const showModal = () => setIsModalOpen(true);
-  const info = (message: string) => messageApi.info(message);
-
   const handleCancel = () => {
     setIsModalOpen(false);
     form.resetFields();
   };
 
-  const handleJoinRoom = (selectedRoomId: string) => {
-    socket.emit(RoomEvents.JOIN, selectedRoomId, userName);
-    socket.on(RoomEvents.OPEN, (room: RoomInfoType) => setSelectedRoom(room));
-    navigate(`game/${selectedRoomId}`);
+  const handleJoinRoom = async (selectedRoomId: string) => {
+    try {
+      setIsLoading(true);
+      await RoomService.join(selectedRoomId, userName);
+
+      socket.emit(RoomEvents.JOIN, selectedRoomId, userName);
+      socket.on(RoomEvents.OPEN, (room: RoomInfoType) => setSelectedRoom(room));
+      navigate(`game/${selectedRoomId}`);
+    } catch (err: any) {
+      appMessage(err.response.data.message, 'error');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   React.useEffect(() => {
-    const currentRoom = rooms.find(
-      (room) => room.id === id,
-    );
+    const currentRoom = rooms?.find((room) => room.id === id);
 
-    if (currentRoom) {
-      setSelectedRoom(currentRoom);
+    if (!rooms.length && !currentRoom) {
       socket.emit(SocketEvents.RECONNECT, currentRoom);
     }
+  }, [id]);
 
+  React.useEffect(() => {
     const handleOpenRoom = (room: RoomInfoType) => setSelectedRoom(room);
     const handleUpdateRooms = (updRooms: RoomInfoType[]) => setRooms(updRooms);
 
@@ -110,6 +124,7 @@ export const SideBar: React.FC = () => {
   return (
     <>
       {contextHolder}
+      {isLoading && <Spin spinning={isLoading} tip="Loading" size="large" className={styles.spinner} />}
       <Layout.Sider width={250} style={{ background: colorBgContainer }}>
         <div className={styles.sideBar}>
           {pathname === `${APP_ROUTES.DASHDOARD}` ? (
@@ -142,15 +157,24 @@ export const SideBar: React.FC = () => {
               <Input placeholder="Game room name" autoFocus />
             </Form.Item>
             <div className={styles.configContainer}>
-              <Form.Item name="mazeSize" label="Maze size:">
+              <Form.Item
+                name="mazeSize"
+                label="Maze size:"
+                rules={[{ required: true, message: 'Maze size is required' }]}
+              >
                 <Select options={MAZE_SIZE} />
               </Form.Item>
-              <Form.Item name="cellSize" label="Cell size:">
+              <Form.Item
+                name="cellSize"
+                label="Cell size:"
+                rules={[{ required: true, message: 'Cell size is required' }]}
+              >
                 <Select options={CELL_SIZE} />
               </Form.Item>
             </div>
           </Form>
         </Modal>
+
       </Layout.Sider>
     </>
   );

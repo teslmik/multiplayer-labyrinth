@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Typography } from 'antd';
+import { RoomInfoType } from '../../types/room-info.type';
 
-export const RoomTimer: React.FC = () => {
-  const [seconds, setSeconds] = useState(0);
+export const RoomTimer: React.FC<{ room: RoomInfoType | undefined }> = ({ room }) => {
+  const [seconds, setSeconds] = React.useState(0);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const intervalId = setInterval(() => {
       setSeconds((prevSeconds) => prevSeconds + 1);
     }, 1000);

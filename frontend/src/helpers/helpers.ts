@@ -5,3 +5,4 @@ export { drawRedSquare } from './draw-red-square';
 export { drawVisitedCells } from './draw-visited-cells';
 export { drawFinishFlag } from './draw-finish-point';
 export { transformDirection } from './transform-direction';
+export { formatTime } from './format-time';

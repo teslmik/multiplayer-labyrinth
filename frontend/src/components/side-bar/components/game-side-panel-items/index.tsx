@@ -47,10 +47,10 @@ export const GameSidePanelItems: React.FC<Properties> = ({
       </Button>
       <div className={styles.listContainer}>
         <ul style={{ listStyle: 'none' }}>
-          {selectedRoom?.players.map((player) => (
-            <li key={player.id}>
+          {selectedRoom?.players?.map((player) => (
+            <li key={player.id} className={styles.userItem}>
               {player.name}{' '}
-              {selectedRoom.players.length === 2 && player.canMove
+              {selectedRoom.players?.length === 2 && player.canMove
                 ? 'your move'
                 : ''}
             </li>

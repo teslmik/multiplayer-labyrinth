@@ -1,5 +1,6 @@
 import { Avatar, List } from 'antd';
 import React from 'react';
+import { formatTime } from '../../../../helpers/helpers';
 import { RoomInfoType } from '../../../../types/types';
 
 import styles from './styles.module.scss';
@@ -16,26 +17,26 @@ export const SideBarItems: React.FC<Properties> = ({
   handleJoinRoom,
 }) => {
   const listItemStyle =
-    room.isGameStarted || room.players.length >= 2
+    room.isGameStarted || room.players?.length === 2
       ? styles.roomItem
       : `${styles.roomItem} ${styles.hover}`;
 
   const listItemDescription = (
-    <ul>
-      <li>players:</li>
-      {room.players.map((player, index) => (
-        <li key={player.id}>{index + 1}. {player.name}</li>
-      ))}
-    </ul>
+    <div>Created by {room.owner.name} at {formatTime(room.createdAt)}</div>
   );
 
-  const listItemBottomMessage =
-    room.isGameStarted || room.players.length >= 2
-      ? 'game started...'
-      : 'waiting player...';
+  const listItemBottomMessage = () => {
+    if (room.isGameStarted) {
+      return 'game started...';
+    } else if (!room.isGameStarted && room.players?.length === 2) {
+      return 'game error!';
+    } else {
+      return 'waiting player...';
+    }
+  };
 
   const handleOnClick = () => {
-    if (room.players.length < 2) {
+    if (room.players && room.players?.length < 2) {
       handleJoinRoom(room.id);
     }
   };
@@ -51,7 +52,7 @@ export const SideBarItems: React.FC<Properties> = ({
         title={room.name}
         description={listItemDescription}
       />
-      {`Status: ${listItemBottomMessage}`}
+      {`Status: ${listItemBottomMessage()}`}
     </List.Item>
   );
 };

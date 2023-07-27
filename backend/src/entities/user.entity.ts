@@ -1,7 +1,6 @@
-
-import { BaseEntity, Column, Entity, JoinTable, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { CellPosType } from "../types/types.js";
-import { Room } from "./index.js";
+import { Room } from "./room.entity.js";
 
 @Entity()
 export class User extends BaseEntity {
@@ -23,7 +22,6 @@ export class User extends BaseEntity {
   @Column({ type: 'timestamp', nullable: true })
   finishedAt: Date;
 
-  @OneToMany(() => Room, (room) => room.players)
-  @JoinTable()
+  @OneToMany(() => Room, (room) => room.owner, { cascade: true })
   rooms: Room[];
 }

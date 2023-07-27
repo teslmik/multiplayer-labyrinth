@@ -1,15 +1,20 @@
-
-import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { HistoryType } from "../types/types.js";
-import { User } from "./index.js";
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { HistoryType } from '../types/types';
+import { User } from './user.entity';
 
 @Entity()
 export class Room extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
-  creatorId: string;
+  @Column('json', { default: [] })
+  players: User[];
 
   @Column()
   name: string;
@@ -20,21 +25,21 @@ export class Room extends BaseEntity {
   @Column({ default: false })
   isGameEnd: boolean;
 
-  @Column('json')
+  @Column('json', { nullable: true, default: { mazeSize: 5, cellSize: 70 } })
   config: { mazeSize: number; cellSize: number };
 
-  @Column('json', { array: true })
+  @Column('json', { default: [[]] })
   maze: boolean[][];
 
-  @Column('json', { array: true })
+  @Column('json', { default: [] })
   history: HistoryType[];
 
   @Column({
     type: 'timestamp',
-    default: () => 'NOW()'
+    default: () => 'NOW()',
   })
-  createdAt: Date;
+  createdAt: string;
 
-  @ManyToOne(() => User, (user) => user.rooms)
-  players: User[];
+  @ManyToOne(() => User, (user) => user.rooms, { onDelete: 'CASCADE' })
+  owner: User;
 }

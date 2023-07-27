@@ -1,6 +1,9 @@
 export const BACKEND_KEYS = {
-  ROOMS: 'rooms',
-  USER: 'user',
-  REGISTER: 'register',
-  LOGIN: 'login'
+  ROOMS: '/rooms',
+  NEW: '/new',
+  USER: '/user',
+  REGISTER: '/register',
+  LOGIN: '/login',
+  ME: '/me',
+  JOIN: '/join'
 } as const;

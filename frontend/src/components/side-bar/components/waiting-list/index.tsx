@@ -18,7 +18,7 @@ export const WaitingList: React.FC<Properties> = ({ showModal, rooms, handleJoin
       <List
         style={{ width: '100%' }}
         bordered
-        dataSource={rooms.filter(room => (!room.isGameStarted && !room.isGameEnd))}
+        dataSource={rooms.filter(room => (!room.isGameEnd))}
         renderItem={(item, index) => (
           <SideBarItems
             room={item}

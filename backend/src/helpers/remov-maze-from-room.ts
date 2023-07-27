@@ -1,9 +1,15 @@
-import { RoomType, RoomInfoType } from "../types/types.js";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { Room } from "../entities";
+import { RoomInfoType } from "../types/types";
 
-export const removeMazeFromRoom = (rooms: RoomType[]): RoomInfoType[] => {
-  return rooms.map((room) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { maze, ...roomWithoutMaze } = room;
-    return roomWithoutMaze;
-  });
+export const removeMazeFromRoom = (rooms: Room | Room[]): RoomInfoType | RoomInfoType[] => {
+  if (Array.isArray(rooms)) {
+    return rooms.map((room) => {
+      const { maze, ...restRoom } = room;
+      return restRoom as RoomInfoType;
+    });
+  } else {
+    const { maze, ...restRoom } = rooms;
+    return restRoom as RoomInfoType;
+  }
 };

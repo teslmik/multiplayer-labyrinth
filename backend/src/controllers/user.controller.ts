@@ -28,11 +28,7 @@ export class UserController {
   }
 
   async getOneUserByName(req: Request, res: Response) {
-    const user = await this.userService.findUserByName(req.body.name);
-
-    if (!user) {
-      throw new Error('User not found');
-    }
+    const user = await this.userService.findUserByName(req.params.userName);
 
     res.json(user);
   }

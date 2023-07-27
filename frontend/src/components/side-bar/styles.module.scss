@@ -11,3 +11,22 @@
   display: flex;
   gap: 24px;
 }
+
+.spinner {
+  position: absolute !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 100% !important;
+  height: 100% !important;
+  background-color: #000;
+  opacity: 0.2;
+  z-index: 1;
+
+  & > span > i {
+    position: relative;
+    z-index: 2;
+  }
+}

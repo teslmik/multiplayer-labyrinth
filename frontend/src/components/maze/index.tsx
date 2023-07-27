@@ -138,7 +138,6 @@ export const Maze: React.FC<Properties> = ({
 
   React.useEffect(() => {
     if (keyPrressCount === 0 && player?.startPoint) {
-      console.log('player?.startPoint: ', player?.startPoint);
       setRedSquarePos(player.startPoint);
       setVisitedCells((prev) => {
         const newVisitedCells = [...prev];
@@ -149,7 +148,6 @@ export const Maze: React.FC<Properties> = ({
           newVisitedCells[y][x] = true;
         }
 
-        console.log('newVisitedCells: ', newVisitedCells);
         return newVisitedCells;
       });
     }

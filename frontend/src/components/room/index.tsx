@@ -18,11 +18,12 @@ export const Room: React.FC<Properties> = ({
   room,
   handleGetWinner,
 }) => {
+  const socket = React.useContext(SocketContext);
   const [message, setMessage] = React.useState<string>('');
   const [isModalOpen, setIsModalOpen] = React.useState(false);
-  const socket = React.useContext(SocketContext);
+
   const findUser = React.useMemo(
-    () => room?.players.find((player) => player.name === userName),
+    () => room?.players?.find((player) => player.name === userName),
     [room?.players, userName],
   );
 
@@ -50,7 +51,6 @@ export const Room: React.FC<Properties> = ({
 
   return (
     <div className={styles.container}>
-      <Typography.Title level={2}>Room {room?.name}</Typography.Title>
       <div className={styles.canvasContainer}>
         <Maze {...mazeProps} />
       </div>

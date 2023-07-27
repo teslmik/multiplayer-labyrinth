@@ -25,13 +25,7 @@ export default class UserService {
   }
 
   async signIn(userName: string): Promise<User> {
-    const user = await this.findUserByName(userName);
-
-    if (!user) {
-      throw new Error('Invalid user name');
-    }
-
-    return user;
+    return await this.findUserByName(userName);
   }
 
   async findAll() {
@@ -39,8 +33,12 @@ export default class UserService {
     return users;
   }
 
-  async findUserByName(payload: string) {
+  async findUserByName(payload: string | undefined) {
     const user = await this.userRepository.findOne({ where: { name: payload } });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
 
     return user;
   }
