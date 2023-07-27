@@ -19,7 +19,6 @@ export default (io: Server) => {
   io.on(SocketEvents.CONNECTION, async (socket) => {
     if (!appRooms) {
       const allRooms = await roomService.findAll();
-      console.log('appRooms-in-if: ', appRooms);
       appRooms = allRooms;
     }
 
@@ -30,13 +29,10 @@ export default (io: Server) => {
         socket.join(currentRoom.id);
         socket.emit(RoomEvents.OPEN, currentRoom);
       }
-      console.log('appRooms: ', appRooms);
 
       if (appRooms.length === 0) {
-        console.log('appRooms-in-if: ', appRooms);
         appRooms = rooms;
       }
-      console.log('rooms: ', rooms);
 
       socket.emit(RoomEvents.UPDATE, removeMazeFromRoom(appRooms));
     });

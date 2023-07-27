@@ -31,8 +31,6 @@ export const Maze: React.FC<Properties> = ({
   handleGetWinner,
   room,
 }) => {
-  console.log('room', room);
-  console.log('player: ', player);
   const { id } = useParams();
   const socket = React.useContext(SocketContext);
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
@@ -162,7 +160,7 @@ export const Maze: React.FC<Properties> = ({
       redSquarePos.x === player?.finishPoint?.x &&
       redSquarePos.y === player.finishPoint?.y
     ) {
-      console.log('Игра завершена!');
+      console.log('Game over!');
       handleGetWinner(redSquarePos);
     }
   }, [player, redSquarePos]);
