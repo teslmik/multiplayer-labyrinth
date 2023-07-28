@@ -18,7 +18,6 @@ export const GameSidePanelItems: React.FC<Properties> = ({
   selectedRoom,
   userName,
 }) => {
-  console.log('selectedRoom: ', selectedRoom);
   return (
     <>
       <Popconfirm

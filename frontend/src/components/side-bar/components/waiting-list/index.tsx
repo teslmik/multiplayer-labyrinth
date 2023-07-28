@@ -1,7 +1,7 @@
 import { Button, List } from 'antd';
 import React from 'react';
 import { RoomInfoType } from '../../../../types';
-import { SideBarItems } from '..';
+import { SideBarItems } from '../side-bar-items';
 
 type Properties = {
   showModal: () => void;
@@ -10,7 +10,6 @@ type Properties = {
 }
 
 export const WaitingList: React.FC<Properties> = ({ showModal, rooms, handleJoinRoom }) => {
-  console.log('rooms: ', rooms);
   return (
     <>
       <Button type="primary" size="large" onClick={showModal}>

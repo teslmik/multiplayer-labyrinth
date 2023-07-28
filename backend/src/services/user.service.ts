@@ -29,6 +29,7 @@ export default class UserService {
   }
 
   async update(socketId: string, userName: string): Promise<User> {
+    console.log('userName: ', userName);
     const user = await this.findUserByName(userName);
 
     await this.userRepository.update(user.id, { socketId });

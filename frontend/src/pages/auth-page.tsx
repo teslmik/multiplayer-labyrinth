@@ -21,6 +21,7 @@ export const LoginPage: React.FC = () => {
   };
 
   const handleOnSubmit = async () => {
+      console.log('userName: ', userName);
     if (!userName) {
       return;
     }
@@ -30,7 +31,7 @@ export const LoginPage: React.FC = () => {
       const { data: user } = isLogin
         ? (await UserService.login(userName))
         : (await UserService.registration(userName));
-      
+
       await UserService.update(socket.id, user.name);
 
       sessionStorage.setItem('username', user.name);
@@ -64,7 +65,7 @@ export const LoginPage: React.FC = () => {
         }}
       >
         <Spin spinning={isLoading} tip="Loading" size="large">
-          <Typography.Title underline level={1} style={{textAlign: 'center'}}>
+          <Typography.Title underline level={1} style={{ textAlign: 'center' }}>
             {isLogin ? 'Login' : 'Registration'}
           </Typography.Title>
           <Form form={form} onFinish={handleOnSubmit}>

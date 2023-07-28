@@ -1,5 +1,5 @@
 import { CellPosType } from '../types/index.js';
-import { isValidCell } from './helpers.js';
+import { isValidCell } from './index.js';
 
 export const checkNextPosition = (
   direction: string,

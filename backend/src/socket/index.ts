@@ -13,7 +13,7 @@ import {
   generateStartPoints,
   getCurrentTime,
   removeMazeFromRoom,
-} from '../helpers/helpers.js';
+} from '../helpers/index.js';
 import { CellPosType, RoomInfoType, RoomType } from '../types/index.js';
 import RoomService from '../services/room.service.js';
 import UserService from '../services/user.service.js';
@@ -24,16 +24,10 @@ let appRooms: Room[];
 
 export default (io: Server) => {
   io.on(SocketEvents.CONNECTION, async (socket) => {
-    if (!appRooms) {
-      const allRooms = await roomService.findAll();
-      appRooms = allRooms;
-      socket.emit(RoomEvents.UPDATE, removeMazeFromRoom(appRooms));
-    }
 
     socket.on(
       SocketEvents.RECONNECT,
       async (currentRoom: RoomInfoType, userName: string) => {
-        console.log('userName: ', userName);
         const rooms = await roomService.findAll();
         await userService.update(socket.id, userName);
 
@@ -42,13 +36,21 @@ export default (io: Server) => {
           socket.emit(RoomEvents.OPEN, currentRoom);
         }
 
-        if (appRooms.length === 0) {
+        if (!appRooms) {
           appRooms = rooms;
         }
 
         socket.emit(RoomEvents.UPDATE, removeMazeFromRoom(appRooms));
       },
     );
+
+    socket.on(UserEvents.LOGIN, async () => {
+      if (!appRooms) {
+        const allRooms = await roomService.findAll();
+        appRooms = allRooms;
+        socket.emit(RoomEvents.UPDATE, removeMazeFromRoom(appRooms));
+      }
+    });
 
     socket.on(RoomEvents.CREATE, async (createdRoom: Room) => {
       const rooms = await roomService.findAll();
@@ -86,7 +88,7 @@ export default (io: Server) => {
         io.sockets.emit(RoomEvents.UPDATE, removeMazeFromRoom(appRooms));
         socket.broadcast.emit(
           RoomEvents.NOTIFICATION,
-          `User ${userName} joined room ${appRooms[findRoomIndex].name}`,
+          `User ${userName} joined room ${appRooms[findRoomIndex]?.name}`,
         );
       },
     );
@@ -300,12 +302,12 @@ export default (io: Server) => {
     console.log('New client connected');
 
     socket.on(SocketEvents.DISCONNECTING, async () => {
-      if (socket.handshake.query.username) {
+      if (socket.handshake.query.username !== 'null') {
         const user = await userService.findUserByName(
           socket.handshake.query.username as string,
         );
 
-        const updatePromises = appRooms.map(async (room, index) => {
+        const updatePromises = appRooms?.map(async (room, index) => {
           if (!room.isGameEnd) {
             const filterPlayer = room.players.filter(
               (player) => player.id !== user.id,
@@ -331,10 +333,7 @@ export default (io: Server) => {
                 RoomEvents.OPEN,
                 removeMazeFromRoom(appRooms[index]),
               );
-              io.sockets.emit(
-                RoomEvents.UPDATE,
-                removeMazeFromRoom(appRooms),
-              );
+              io.sockets.emit(RoomEvents.UPDATE, removeMazeFromRoom(appRooms));
 
               return roomService.update(room.id, appRooms[index]);
             }
