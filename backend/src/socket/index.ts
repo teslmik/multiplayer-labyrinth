@@ -46,8 +46,8 @@ export default (io: Server) => {
 
     socket.on(UserEvents.LOGIN, async () => {
       if (!appRooms) {
-        const allRooms = await roomService.findAll();
-        appRooms = allRooms;
+        const rooms = await roomService.findAll();
+        appRooms = rooms;
         socket.emit(RoomEvents.UPDATE, removeMazeFromRoom(appRooms));
       }
     });
@@ -307,7 +307,12 @@ export default (io: Server) => {
           socket.handshake.query.username as string,
         );
 
-        const updatePromises = appRooms?.map(async (room, index) => {
+        if (!appRooms) {
+          const rooms = await roomService.findAll();
+          appRooms = rooms;
+        }
+
+        const updatePromises = appRooms.map(async (room, index) => {
           if (!room.isGameEnd) {
             const filterPlayer = room.players.filter(
               (player) => player.id !== user.id,
@@ -340,8 +345,9 @@ export default (io: Server) => {
           }
           return null;
         });
-
-        await Promise.all(updatePromises);
+        if (updatePromises) {
+          await Promise.all(updatePromises);
+        }
 
         const rooms = await roomService.findAll();
 

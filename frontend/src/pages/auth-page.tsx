@@ -33,6 +33,7 @@ export const LoginPage: React.FC = () => {
         : (await UserService.registration(userName));
 
       await UserService.update(socket.id, user.name);
+      socket.emit(UserEvents.LOGIN);
 
       sessionStorage.setItem('username', user.name);
       navigate(APP_ROUTES.DASHDOARD);
