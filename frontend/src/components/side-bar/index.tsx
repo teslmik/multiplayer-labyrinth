@@ -95,10 +95,22 @@ export const SideBar: React.FC = () => {
   };
 
   React.useEffect(() => {
+    // const lostRoom = rooms.find(
+    //   (room) =>
+    //     !room.isGameEnd &&
+    //     room.players?.find((player) => player.name === userName) &&
+    //     room.id !== id,
+    // );
+
+    // if (lostRoom) {
+    //   handleJoinRoom(lostRoom.id);
+    // }
+
     const currentRoom = rooms?.find((room) => room.id === id);
 
     if (!rooms.length && !currentRoom) {
       socket.emit(SocketEvents.RECONNECT, currentRoom, userName);
+      if (id) navigate(`/`);
     }
   }, [id]);
 
@@ -108,7 +120,7 @@ export const SideBar: React.FC = () => {
       setRooms(updRooms);
 
       if (!selectedRoom && id) {
-        const currentRoom = updRooms.find(room => room.id === id);
+        const currentRoom = updRooms.find((room) => room.id === id);
         setSelectedRoom(currentRoom);
       }
     };
@@ -131,7 +143,14 @@ export const SideBar: React.FC = () => {
   return (
     <>
       {contextHolder}
-      {isLoading && <Spin spinning={isLoading} tip="Loading" size="large" className={styles.spinner} />}
+      {isLoading && (
+        <Spin
+          spinning={isLoading}
+          tip="Loading"
+          size="large"
+          className={styles.spinner}
+        />
+      )}
       <Layout.Sider width={250} style={{ background: colorBgContainer }}>
         <div className={styles.sideBar}>
           {pathname === `${APP_ROUTES.DASHDOARD}` ? (
@@ -181,7 +200,6 @@ export const SideBar: React.FC = () => {
             </div>
           </Form>
         </Modal>
-
       </Layout.Sider>
     </>
   );

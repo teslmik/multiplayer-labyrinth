@@ -20,17 +20,15 @@ class UserService {
     );
   }
 
-  static async getUser(
+  static async update(
+    socketId: string,
     userName: string,
   ): Promise<AxiosResponse<UserType>> {
-    return api.get<UserType>(
-      `${APP_KEYS.BACKEND_KEYS.USER}${APP_KEYS.BACKEND_KEYS.ME}`,
-      {
-        params: userName
-      },
+    return api.post<UserType>(
+      `${APP_KEYS.BACKEND_KEYS.USER}${APP_KEYS.BACKEND_KEYS.UPDATE}`,
+      { socketId, userName },
     );
   }
-
 }
 
 export { UserService };

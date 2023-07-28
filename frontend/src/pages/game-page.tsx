@@ -12,7 +12,6 @@ export const GamePage: React.FC = () => {
   const [currentRoom, setCurrentRoom] = React.useState<
     RoomInfoType | undefined
   >();
-  console.log('currentRoom: ', currentRoom);
 
   const userName = sessionStorage.getItem('username');
 

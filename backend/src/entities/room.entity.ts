@@ -40,6 +40,6 @@ export class Room extends BaseEntity {
   })
   createdAt: string;
 
-  @ManyToOne(() => User, (user) => user.rooms)
+  @ManyToOne(() => User, (user) => user.rooms, { cascade: true })
   owner: User;
 }

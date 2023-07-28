@@ -18,7 +18,7 @@ export const appDataSource = new DataSource({
   port: Number(process.env.POSTGRES_PORT),
   logging: ['query', 'error'],
   type: 'postgres',
-  entities: [User, Room],
+  entities: [Room, User],
   database: process.env.POSTGRES_DB,
   username: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,

@@ -17,7 +17,7 @@ export default class RoomService {
     const user = await this.userService.findUserByName(roomData.userName);
 
     if (!user) {
-      throw new Error('User not found');
+      throw new Error('User not found, reload your page');
     }
 
     const room: Room = await this.roomRepository.save({
@@ -41,7 +41,7 @@ export default class RoomService {
     });
 
     if (!currentRoom || !user) {
-      throw new Error('Internar Error');
+      throw new Error('Internar Error,  reload your page');
     }
 
     const { players, ...restRoom } = currentRoom;

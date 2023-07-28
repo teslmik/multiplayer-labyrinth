@@ -18,6 +18,7 @@ export const GameSidePanelItems: React.FC<Properties> = ({
   selectedRoom,
   userName,
 }) => {
+  console.log('selectedRoom: ', selectedRoom);
   return (
     <>
       <Popconfirm
@@ -31,7 +32,9 @@ export const GameSidePanelItems: React.FC<Properties> = ({
           type="primary"
           size="large"
           block
-          disabled={!selectedRoom?.isGameStarted}
+          disabled={
+            !selectedRoom?.isGameStarted || selectedRoom?.players?.length !== 2
+          }
         >
           Give up
         </Button>
@@ -41,14 +44,23 @@ export const GameSidePanelItems: React.FC<Properties> = ({
         size="large"
         block
         onClick={handleExit}
-        disabled={selectedRoom?.isGameStarted}
+        disabled={
+          selectedRoom?.isGameStarted && selectedRoom?.players?.length === 2
+        }
       >
         Exit
       </Button>
       <div className={styles.listContainer}>
         <ul className={styles.list} style={{ listStyle: 'none' }}>
           {selectedRoom?.players?.map((player) => (
-            <li key={player.id} className={player.canMove ? `${styles.userItem} ${styles.move}` : styles.userItem}>
+            <li
+              key={player.id}
+              className={
+                player.canMove
+                  ? `${styles.userItem} ${styles.move}`
+                  : styles.userItem
+              }
+            >
               {player.name}{' '}
               {selectedRoom.players?.length === 2 && player.canMove
                 ? '- move'

@@ -11,7 +11,7 @@
   },
   "scripts": {
     "dev": "npx nodemon",
-    "build": "rimraf ./dist && npx tsc",
+    "build": "npx tsc",
     "start": "npm run build && node dist/index",
     "lint": "npx eslint ./src",
     "format": "npx eslint ./src --fix"

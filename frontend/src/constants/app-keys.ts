@@ -4,6 +4,6 @@ export const BACKEND_KEYS = {
   USER: '/user',
   REGISTER: '/register',
   LOGIN: '/login',
-  ME: '/me',
+  UPDATE: '/update',
   JOIN: '/join'
 } as const;

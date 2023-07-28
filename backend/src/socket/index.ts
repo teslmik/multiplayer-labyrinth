@@ -1,6 +1,11 @@
 import { Server } from 'socket.io';
 import { Room } from '../entities/index.js';
-import { GameEvents, RoomEvents, SocketEvents, UserEvents } from '../enums/index.js';
+import {
+  GameEvents,
+  RoomEvents,
+  SocketEvents,
+  UserEvents,
+} from '../enums/index.js';
 import {
   checkNextPosition,
   generateFinishPoint,
@@ -11,8 +16,10 @@ import {
 } from '../helpers/helpers.js';
 import { CellPosType, RoomInfoType, RoomType } from '../types/index.js';
 import RoomService from '../services/room.service.js';
+import UserService from '../services/user.service.js';
 
 const roomService = new RoomService();
+const userService = new UserService();
 let appRooms: Room[];
 
 export default (io: Server) => {
@@ -20,22 +27,28 @@ export default (io: Server) => {
     if (!appRooms) {
       const allRooms = await roomService.findAll();
       appRooms = allRooms;
+      socket.emit(RoomEvents.UPDATE, removeMazeFromRoom(appRooms));
     }
 
-    socket.on(SocketEvents.RECONNECT, async (currentRoom: RoomInfoType) => {
-      const rooms = await roomService.findAll();
+    socket.on(
+      SocketEvents.RECONNECT,
+      async (currentRoom: RoomInfoType, userName: string) => {
+        console.log('userName: ', userName);
+        const rooms = await roomService.findAll();
+        await userService.update(socket.id, userName);
 
-      if (currentRoom) {
-        socket.join(currentRoom.id);
-        socket.emit(RoomEvents.OPEN, currentRoom);
-      }
+        if (currentRoom) {
+          socket.join(currentRoom.id);
+          socket.emit(RoomEvents.OPEN, currentRoom);
+        }
 
-      if (appRooms.length === 0) {
-        appRooms = rooms;
-      }
+        if (appRooms.length === 0) {
+          appRooms = rooms;
+        }
 
-      socket.emit(RoomEvents.UPDATE, removeMazeFromRoom(appRooms));
-    });
+        socket.emit(RoomEvents.UPDATE, removeMazeFromRoom(appRooms));
+      },
+    );
 
     socket.on(RoomEvents.CREATE, async (createdRoom: Room) => {
       const rooms = await roomService.findAll();
@@ -285,6 +298,57 @@ export default (io: Server) => {
     );
 
     console.log('New client connected');
+
+    socket.on(SocketEvents.DISCONNECTING, async () => {
+      if (socket.handshake.query.username) {
+        const user = await userService.findUserByName(
+          socket.handshake.query.username as string,
+        );
+
+        const updatePromises = appRooms.map(async (room, index) => {
+          if (!room.isGameEnd) {
+            const filterPlayer = room.players.filter(
+              (player) => player.id !== user.id,
+            );
+            if (filterPlayer.length === 0) {
+              socket.leave(room.id);
+              socket.broadcast.emit(
+                RoomEvents.NOTIFICATION,
+                `User ${user.name} left room ${room.name}`,
+              );
+              return roomService.delete(room.id);
+            } else {
+              appRooms[index].players = filterPlayer;
+              appRooms[index].isGameEnd = true;
+              appRooms[index].isGameStarted = false;
+
+              socket.leave(room.id);
+              socket.broadcast.emit(
+                RoomEvents.NOTIFICATION,
+                `User ${user.name} left room ${room.name}`,
+              );
+              io.to(appRooms[index].id).emit(
+                RoomEvents.OPEN,
+                removeMazeFromRoom(appRooms[index]),
+              );
+              io.sockets.emit(
+                RoomEvents.UPDATE,
+                removeMazeFromRoom(appRooms),
+              );
+
+              return roomService.update(room.id, appRooms[index]);
+            }
+          }
+          return null;
+        });
+
+        await Promise.all(updatePromises);
+
+        const rooms = await roomService.findAll();
+
+        appRooms = rooms;
+      }
+    });
 
     socket.on(SocketEvents.DISCONNECT, () => {
       console.log('Client disconnected');

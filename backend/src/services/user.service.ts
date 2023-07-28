@@ -28,13 +28,22 @@ export default class UserService {
     return await this.findUserByName(userName);
   }
 
+  async update(socketId: string, userName: string): Promise<User> {
+    const user = await this.findUserByName(userName);
+
+    await this.userRepository.update(user.id, { socketId });
+    const updateUser = await this.findUserByName(userName);
+
+    return updateUser;
+  }
+
   async findAll() {
     const users = await this.userRepository.find();
     return users;
   }
 
-  async findUserByName(payload: string | undefined) {
-    const user = await this.userRepository.findOne({ where: { name: payload } });
+  async findUserByName(name: string | undefined) {
+    const user = await this.userRepository.findOne({ where: { name } });
 
     if (!user) {
       throw new Error('User not found');

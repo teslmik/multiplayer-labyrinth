@@ -10,6 +10,7 @@ type Properties = {
 }
 
 export const WaitingList: React.FC<Properties> = ({ showModal, rooms, handleJoinRoom }) => {
+  console.log('rooms: ', rooms);
   return (
     <>
       <Button type="primary" size="large" onClick={showModal}>
@@ -18,7 +19,7 @@ export const WaitingList: React.FC<Properties> = ({ showModal, rooms, handleJoin
       <List
         style={{ width: '100%' }}
         bordered
-        dataSource={rooms.filter(room => (!room.isGameEnd))}
+        dataSource={rooms?.filter(room => (!room.isGameEnd))}
         renderItem={(item, index) => (
           <SideBarItems
             room={item}

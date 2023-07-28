@@ -22,6 +22,15 @@ export class UserController {
     next();
   }
 
+  async update(req: Request, res: Response, next: NextFunction) {
+    const { socketId, userName } = req.body as { socketId: string, userName: string };
+    const userData = await this.userService.update(socketId, userName);
+
+    res.json(userData);
+
+    next();
+  }
+
   async getAllUsers(_: Request, res: Response) {
     const users = await this.userService.findAll();
     res.json(users);
