@@ -48,7 +48,7 @@ export default class RoomService {
 
     await this.roomRepository.update(roomId, {
       ...restRoom,
-      players: [...players, { ...user }],
+      players: [...players, user ],
     });
 
     const updatedRoom = await this.roomRepository.findOne({

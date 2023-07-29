@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Form, Input, Space, Spin, Typography } from 'antd';
-import { APP_ROUTES, UserEvents } from '../enums';
+import { APP_ROUTES, SocketEvents, UserEvents } from '../enums';
 import { UserService } from '../services/user.service';
 import { useAppMessage } from '../hooks/use-app-message';
 import { SocketContext } from '../context/socket';
@@ -21,7 +21,6 @@ export const LoginPage: React.FC = () => {
   };
 
   const handleOnSubmit = async () => {
-      console.log('userName: ', userName);
     if (!userName) {
       return;
     }

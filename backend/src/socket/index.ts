@@ -178,7 +178,6 @@ export default (io: Server) => {
           player.finishPoint = finishPosition;
         });
 
-        io.to(currentRoom.id).emit(GameEvents.STARTED, true);
         io.to(currentRoom.id).emit(
           RoomEvents.OPEN,
           removeMazeFromRoom(appRooms[index]),

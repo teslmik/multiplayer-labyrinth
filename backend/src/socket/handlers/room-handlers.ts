@@ -2,7 +2,7 @@
 import { Server, Socket } from 'socket.io';
 import RoomService from '../../services/room.service.js';
 import { Room } from '../../entities/index.js';
-import { GameEvents, RoomEvents } from '../../enums/index.js';
+import { RoomEvents } from '../../enums/index.js';
 import { CellPosType, RoomType } from '../../types/index.js';
 import {
   checkNextPosition,
@@ -129,7 +129,6 @@ export default function roomHandlers(
         player.finishPoint = finishPosition;
       });
 
-      io.to(currentRoom.id).emit(GameEvents.STARTED, true);
       io.to(currentRoom.id).emit(
         RoomEvents.OPEN,
         removeMazeFromRoom(appRooms[index]),
