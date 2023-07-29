@@ -95,7 +95,7 @@ export const HistoryList: React.FC<Properties> = ({
             <List.Item className={listItemStyle(item)}>
               <p>{item.time}</p>
               <div className={styles.listText}>
-                <span>{item.playerName === userName ? 'you' : item.playerName}: </span>
+                {item.playerName  && <span>{item.playerName === userName ? 'you' : item.playerName}: </span>}
                 <span>{item.text}</span>
               </div>
             </List.Item>
