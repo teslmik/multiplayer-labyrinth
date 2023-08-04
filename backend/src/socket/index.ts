@@ -109,7 +109,7 @@ export default (io: Server) => {
     );
 
     socket.on(RoomEvents.EXIT, async (roomId: string, userName: string) => {
-      const findRoomIndex = appRooms.findIndex((room) => room.id === roomId);
+      const findRoomIndex = appRooms?.findIndex((room) => room.id === roomId);
 
       if (roomId) {
         await roomService.update(roomId, appRooms[findRoomIndex]);
@@ -262,10 +262,10 @@ export default (io: Server) => {
       ) => {
         const index = appRooms.findIndex((room) => room.id === id);
 
-        if (index !== -1 && playerName) {
+        if (index !== -1) {
           appRooms[index].history.push({
             time: getCurrentTime(),
-            playerName,
+            playerName: playerName ? playerName : '',
             text,
             moves: undefined,
           });
@@ -280,7 +280,7 @@ export default (io: Server) => {
               maze,
             );
 
-            lastHistoryItem.moves = {
+            lastHistoryItem.moves = { 
               from: previosPosition,
               to: checkPosition,
             };

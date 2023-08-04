@@ -23,7 +23,7 @@ export class User extends BaseEntity {
   finishPoint: CellPosType | null;
 
   @Column({ type: 'timestamp', nullable: true })
-  finishedAt: Date;
+  finishedAt: Date | null;
 
   @OneToMany(() => Room, (room) => room.owner)
   rooms: Room[];

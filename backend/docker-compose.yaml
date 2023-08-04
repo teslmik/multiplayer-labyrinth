@@ -1,0 +1,16 @@
+version: '3.5'
+
+services:
+  postgres:
+    container_name: postgres_db
+    ports:
+      - "5400:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: postgres
+      PGDATA: /var/lib/postgresql/data/pgdata
+    image: postgres:15.3-alpine
+    restart: always
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data/

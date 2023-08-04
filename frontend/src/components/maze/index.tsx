@@ -10,12 +10,7 @@ import {
   drawRedSquare,
   drawVisitedCells,
 } from '../../helpers';
-import {
-  CellPosType,
-  HistoryType,
-  RoomInfoType,
-  UserType,
-} from '../../types';
+import { CellPosType, HistoryType, RoomInfoType, UserType } from '../../types';
 import * as config from './config';
 
 type PrefixType = 'up' | 'down' | 'left' | 'right';
@@ -105,7 +100,7 @@ export const Maze: React.FC<Properties> = ({
           `(going ${directionRef.current})`,
           id,
           player.name,
-          redSquarePos
+          redSquarePos,
         );
       }
     },
@@ -162,6 +157,11 @@ export const Maze: React.FC<Properties> = ({
     ) {
       console.log('Game over!');
       handleGetWinner(redSquarePos);
+      socket.emit(
+        RoomEvents.HISTORY,
+        `Player ${player.name} has won!`,
+        room?.id
+      );
     }
   }, [player, redSquarePos]);
 
