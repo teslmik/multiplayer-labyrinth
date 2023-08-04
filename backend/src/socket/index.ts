@@ -280,7 +280,7 @@ export default (io: Server) => {
               maze,
             );
 
-            lastHistoryItem.moves = {
+            lastHistoryItem.moves = { 
               from: previosPosition,
               to: checkPosition,
             };

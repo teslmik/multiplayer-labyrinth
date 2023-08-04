@@ -1,8 +1,8 @@
 import { Repository } from 'typeorm';
 import { appDataSource } from '../config/app-data-source.js';
 import { CreateRoomType, RoomInfoType } from '../types/index.js';
-import { Room } from '../entities/index.js';
 import { removeMazeFromRoom } from '../helpers/index.js';
+import { Room } from '../entities/index.js';
 import UserService from './user.service.js';
 
 export default class RoomService {

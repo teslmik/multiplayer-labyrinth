@@ -24,28 +24,14 @@ export class RoomController {
     next();
   }
 
-  // async update(req: Request, res: Response, next: NextFunction) {
-  //   const room:  = req.body.room;
-
-  //   const newRoom = await this.roomService.join({ roomId, userName });
-
-  //   res.status(201).json(newRoom);
-
-  //   next();
-  // }
-
   async getAllRooms(_: Request, res: Response) {
     const rooms = await this.roomService.findAll();
     res.json(rooms);
+    
   }
 
   async getOneRoomByName(req: Request, res: Response) {
     const room = await this.roomService.findRoomById(req.body.roomId);
-
-    if (!room) {
-      throw new Error('User not found');
-    }
-
     res.json(room);
   }
 }

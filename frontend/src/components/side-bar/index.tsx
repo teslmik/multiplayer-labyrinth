@@ -39,7 +39,6 @@ export const SideBar: React.FC = () => {
 
       try {
         setIsLoading(true);
-        setIsModalOpen(false);
 
         const { data: room } = await RoomService.create({
           cellSize,
@@ -58,6 +57,7 @@ export const SideBar: React.FC = () => {
         appMessage(err.response.data.message, 'error');
       } finally {
         setIsLoading(false);
+        setIsModalOpen(false);
       }
     });
   };
@@ -172,6 +172,7 @@ export const SideBar: React.FC = () => {
           title="Enter game room name"
           open={isModalOpen}
           onOk={handleNewGame}
+          confirmLoading={isLoading}
           onCancel={handleCancel}
         >
           <Form form={form} layout="vertical" onFinish={handleNewGame}>
